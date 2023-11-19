@@ -23,6 +23,13 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
+a {
+	text-decoration: none;
+	color: black;
+}
+.password-link {
+text-decoration: underline;
+}
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
@@ -52,6 +59,7 @@ body {
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
+	line-height: normal;
 }
 header {
 	display: flex;
@@ -120,6 +128,36 @@ li:hover {
 #introduction p {
 	margin-bottom: 0.5em;
 }
+#portfolio {
+	text-align: center;
+  }
+  #gallery.gallery {
+	margin: 0 auto;
+	max-width: 960px; 
+  }
+  
+  #categoryButtons {
+	margin-bottom: 40px;
+  }
+  #categoryButtons button {
+	font-family: 'Syne';
+	font-weight: 700;
+	color: #1D6154;
+	margin: 0 10px;
+	padding: 10px 20px;
+	border: 2px solid #1D6154;
+	border-radius: 60px;
+	cursor: pointer;
+	background-color: transparent; 
+	transition: background-color 0.3s, color 0.3s;
+	margin-bottom: 50px;
+  }
+  
+  #categoryButtons button:hover {
+	background-color: #1D6154; 
+	color: white; 
+  }
+
 #portfolio h2 {
 	text-align: center;
 	margin-bottom: 1em;
@@ -134,36 +172,42 @@ li:hover {
 
 .gallery img {
 	width: 100%;
-
 }
-#contact {
+#contact,
+#login {
 	width: 50%;
 margin: auto;
 }
-#contact > * {
+#contact > *,
+#login > * {
 	text-align: center;
 
 }
-#contact h2{
+#contact h2,
+#login h2{
 	margin-bottom: 20px;
 }
-#contact form {
+#contact form,
+#login form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input {
+#contact input,
+#login input {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+#contact label,
+#login label {
 	margin: 2em 0 1em 0;
 }
-#contact textarea {
+#contact textarea,
+#login textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
