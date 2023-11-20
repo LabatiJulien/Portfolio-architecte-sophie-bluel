@@ -1,22 +1,26 @@
 // Déclaration de la fonction pour afficher dynamiquement les travaux
 function displayGalleryItems(data) {
   const galleryDiv = document.getElementById("gallery");
-  galleryDiv.innerHTML = "";
 
-  data.forEach(item => {
-    const figureElement = document.createElement("figure");
-    const imgElement = document.createElement("img");
-    imgElement.src = item.imageUrl;
-    imgElement.alt = item.title;
+  // Vérifie si l'élément "gallery" existe sur la page
+  if (galleryDiv) {
+    galleryDiv.innerHTML = "";
 
-    const figcaptionElement = document.createElement("figcaption");
-    figcaptionElement.textContent = item.title;
+    data.forEach(item => {
+      const figureElement = document.createElement("figure");
+      const imgElement = document.createElement("img");
+      imgElement.src = item.imageUrl;
+      imgElement.alt = item.title;
 
-    figureElement.appendChild(imgElement);
-    figureElement.appendChild(figcaptionElement);
+      const figcaptionElement = document.createElement("figcaption");
+      figcaptionElement.textContent = item.title;
 
-    galleryDiv.appendChild(figureElement);
-  });
+      figureElement.appendChild(imgElement);
+      figureElement.appendChild(figcaptionElement);
+
+      galleryDiv.appendChild(figureElement);
+    });
+  }
 }
 
 // Déclaration de la fonction pour filtrer les travaux par catégorie
@@ -58,6 +62,9 @@ async function fetchData() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+  console.log("DOM Content Loaded. Calling fetchData...");
+  fetchData();
+
   // Ajout des gestionnaires d'événements pour le filtrage par catégorie
   document.getElementById("allButton").addEventListener("click", function() {
     filterByCategory('all');
@@ -74,7 +81,4 @@ document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("hotelsButton").addEventListener("click", function() {
     filterByCategory(3);
   });
-
-  // Appel de la fonction asynchrone pour récupérer les données de l'API
-  fetchData();
 });
