@@ -53,6 +53,9 @@ async function fetchData() {
 
       // Stocke les données pour les utiliser lors du filtrage
       window.allWorks = data;
+
+      // Mise à jour de l'affichage du bouton Login/Logout
+      updateLoginLogoutButton();
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
     }
@@ -61,24 +64,97 @@ async function fetchData() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+function updateLoginLogoutButton() {
+  const token = localStorage.getItem('token');
+  const loginLink = document.querySelector("nav li a[href='login/login.html']");
+  const logoutButton = document.getElementById("logoutButton");
+
+  if (token) {
+    // Utilisateur connecté
+    // Remplace le lien "Login" par le bouton "Logout"
+    if (loginLink && logoutButton) {
+      loginLink.replaceWith(logoutButton);
+    }
+  } else {
+    // Utilisateur non connecté
+    // Remplace le bouton "Logout" par le lien "Login"
+    if (logoutButton && loginLink) {
+      logoutButton.replaceWith(loginLink);
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
   console.log("DOM Content Loaded. Calling fetchData...");
-  fetchData();
+
+  // Vérifie si la page actuelle est index.html
+  const isIndexPage = window.location.pathname.includes("index.html");
+
+  if (isIndexPage) {
+    // Vérifie si l'élément "gallery" existe sur la page
+    const galleryDiv = document.getElementById("gallery");
+    if (galleryDiv) {
+      // Vérifie si un token est présent dans le stockage local
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        // Utilisateur connecté
+        fetchData();
+
+        // Ajoutez dynamiquement un bouton de déconnexion
+        const logoutButton = document.createElement("button");
+        logoutButton.id = "logoutButton";
+        logoutButton.textContent = "Logout";
+        logoutButton.addEventListener("click", function () {
+          // Déconnectez l'utilisateur en supprimant le token
+          localStorage.removeItem('token');
+          // Redirigez l'utilisateur vers la page de connexion
+          window.location.href = "/login/login.html";
+        });
+
+        // Ajoutez le bouton à un élément existant sur la page (par exemple, le header)
+        const header = document.querySelector("header");
+        if (header) {
+          header.appendChild(logoutButton);
+        }
+      } else {
+        // Utilisateur non connecté
+        // Vous pouvez également masquer ou désactiver des éléments réservés aux utilisateurs authentifiés
+        console.log("L'utilisateur n'est pas connecté.");
+
+        // Appel de la fonction pour afficher dynamiquement les travaux même pour les utilisateurs non connectés
+        fetchData();
+      }
+    }
+  }
 
   // Ajout des gestionnaires d'événements pour le filtrage par catégorie
-  document.getElementById("allButton").addEventListener("click", function() {
-    filterByCategory('all');
-  });
+  const allButton = document.getElementById("allButton");
+  const objectsButton = document.getElementById("objectsButton");
+  const apartmentsButton = document.getElementById("apartmentsButton");
+  const hotelsButton = document.getElementById("hotelsButton");
 
-  document.getElementById("objectsButton").addEventListener("click", function() {
-    filterByCategory(1);
-  });
+  if (allButton) {
+    allButton.addEventListener("click", function () {
+      filterByCategory('all');
+    });
+  }
 
-  document.getElementById("apartmentsButton").addEventListener("click", function() {
-    filterByCategory(2);
-  });
+  if (objectsButton) {
+    objectsButton.addEventListener("click", function () {
+      filterByCategory(1);
+    });
+  }
 
-  document.getElementById("hotelsButton").addEventListener("click", function() {
-    filterByCategory(3);
-  });
+  if (apartmentsButton) {
+    apartmentsButton.addEventListener("click", function () {
+      filterByCategory(2);
+    });
+  }
+
+  if (hotelsButton) {
+    hotelsButton.addEventListener("click", function () {
+      filterByCategory(3);
+    });
+  }
 });
