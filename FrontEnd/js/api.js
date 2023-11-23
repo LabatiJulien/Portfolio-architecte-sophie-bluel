@@ -64,10 +64,18 @@ async function fetchData() {
   }
 }
 
+// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
+function isLoggedIn() {
+  // Ajoutez ici la logique pour vérifier si l'utilisateur est connecté
+  const token = localStorage.getItem('token');
+  return !!token; // Cela renverra true si un token est présent, sinon false
+}
+
 function updateLoginLogoutButton() {
   const token = localStorage.getItem('token');
   const loginLink = document.querySelector("nav li a[href='login/login.html']");
   const logoutButton = document.getElementById("logoutButton");
+  const filtersContainer = document.getElementById("categoryButtons"); // Ajout de cette ligne
 
   if (token) {
     // Utilisateur connecté
@@ -75,11 +83,21 @@ function updateLoginLogoutButton() {
     if (loginLink && logoutButton) {
       loginLink.replaceWith(logoutButton);
     }
+
+    // Ajoute la classe pour masquer les filtres
+    if (filtersContainer) {
+      filtersContainer.classList.add("hidden");
+    }
   } else {
     // Utilisateur non connecté
     // Remplace le bouton "Logout" par le lien "Login"
     if (logoutButton && loginLink) {
       logoutButton.replaceWith(loginLink);
+    }
+
+    // Retire la classe pour afficher les filtres
+    if (filtersContainer) {
+      filtersContainer.classList.remove("hidden");
     }
   }
 }
@@ -158,3 +176,36 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 });
+
+// Ajout de la modale
+window.onload = function () {
+  const modalContainer = document.querySelector(".modal-container");
+  const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
+  const closeModalButtons = document.querySelectorAll(".close-modal.modal-trigger");
+  const overlay = document.querySelector(".overlay");
+
+  // Vérifie si l'utilisateur est connecté
+  const isUserLoggedIn = isLoggedIn();
+
+  // Affiche ou masque le bouton "modifier" en fonction de la connexion
+  modalTriggers.forEach(trigger => {
+    trigger.style.display = isUserLoggedIn ? "block" : "none";
+    trigger.removeEventListener("click", toggleModal);
+    trigger.addEventListener("click", toggleModal);
+  });
+
+  closeModalButtons.forEach(button => button.addEventListener("click", toggleModal));
+  
+  // Ajout de la vérification pour éviter l'erreur si overlay est null
+  if (overlay) {
+    overlay.addEventListener("click", function (event) {
+      if (event.target === overlay) {
+        toggleModal();
+      }
+    });
+  }
+
+  function toggleModal() {
+    modalContainer.classList.toggle("active");
+  }
+};
