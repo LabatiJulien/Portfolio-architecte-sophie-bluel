@@ -243,14 +243,21 @@ footer nav ul {
 	font-size: 17px;
 	font-family:'Work Sans';
   }
+  .portfolio-header h2 {
+	margin-right: 10px; 
+  }
+  .portfolio-header {
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
+  }
+  
   .modal-btn {
 	background-color: transparent; 
 	border: none; 
 	color: #000000;
 	cursor: pointer;
-	font-family:'Work Sans';
-	display: block;
-	margin:auto;
+	font-family: 'Work Sans';
   }
   .modal-container {
 	display:none;
