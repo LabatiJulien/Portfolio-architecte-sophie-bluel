@@ -271,6 +271,13 @@ overlay.addEventListener("click", overlayClickHandler);
     // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
     const galleryClone = galleryContent.cloneNode(true);
     galleryClone.classList.add("modal-gallery");
+  
+    // Supprime le texte (figcaption) de chaque figure dans la galerie clonée
+    const figures = galleryClone.querySelectorAll("figure");
+    figures.forEach(figure => {
+      figure.removeChild(figure.querySelector("figcaption"));
+    });
+  
     modalContent.appendChild(galleryClone);
   
     // Ajoute le bouton "Ajouter une photo" à la modale
@@ -294,6 +301,7 @@ overlay.addEventListener("click", overlayClickHandler);
   
     modal.appendChild(closeModalButton);
   }
+  
   
    
       if (token) {
