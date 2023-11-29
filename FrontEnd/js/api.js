@@ -66,16 +66,15 @@ async function fetchData() {
 
 // Déclaration de la fonction pour vérifier si l'utilisateur est connecté
 function isLoggedIn() {
-  // Ajoutez ici la logique pour vérifier si l'utilisateur est connecté
   const token = localStorage.getItem('token');
-  return !!token; // Cela renverra true si un token est présent, sinon false
+  return !!token; 
 }
 
 function updateLoginLogoutButton() {
   const token = localStorage.getItem('token');
   const loginLink = document.querySelector("nav li a[href='login/login.html']");
   const logoutButton = document.getElementById("logoutButton");
-  const filtersContainer = document.getElementById("categoryButtons"); // Ajout de cette ligne
+  const filtersContainer = document.getElementById("categoryButtons"); 
 
   if (token) {
     // Utilisateur connecté
@@ -88,6 +87,7 @@ function updateLoginLogoutButton() {
     if (filtersContainer) {
       filtersContainer.classList.add("hidden");
     }
+    toggleEditModeBanner(true);
   } else {
     // Utilisateur non connecté
     // Remplace le bouton "Logout" par le lien "Login"
@@ -99,6 +99,7 @@ function updateLoginLogoutButton() {
     if (filtersContainer) {
       filtersContainer.classList.remove("hidden");
     }
+    toggleEditModeBanner(false);
   }
 }
 
@@ -209,3 +210,45 @@ window.onload = function () {
     modalContainer.classList.toggle("active");
   }
 };
+
+function toggleEditModeBanner(isEditMode) {
+  const header = document.querySelector("header");
+
+  // Vérifie si l'élément du header existe
+  if (header) {
+    // Vérifie si le mode édition est activé
+    if (isEditMode) {
+      // Crée la bande noire avec le texte "Mode édition"
+      const editModeBanner = document.createElement("div");
+      editModeBanner.className = "edit-mode-banner";
+
+      // Crée l'icône Font Awesome
+      const iconElement = document.createElement("i");
+      iconElement.classList.add("fa-regular", "fa-pen-to-square", "fa-xs");
+
+      // Ajoute l'icône à la bannière
+      editModeBanner.appendChild(iconElement);
+
+      // Crée l'élément pour le texte "Mode édition"
+      const textElement = document.createElement("span");
+      textElement.textContent = " Mode édition";
+
+      // Ajoute le texte à la bannière
+      editModeBanner.appendChild(textElement);
+
+      // Ajoute la bande noire au-dessus du header
+      header.parentNode.insertBefore(editModeBanner, header);
+
+      // Ajoute une classe au header pour ajuster la position
+      header.classList.add("header-with-banner");
+    } else {
+      // Supprime la bande noire et la classe du header
+      const editModeBanner = document.querySelector(".edit-mode-banner");
+      if (editModeBanner) {
+        editModeBanner.remove();
+      }
+
+      header.classList.remove("header-with-banner");
+    }
+  }
+}

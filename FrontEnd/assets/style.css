@@ -62,9 +62,7 @@ body {
 	font-size: 14px;
 	line-height: normal;
 }
-body {
-	margin: 0;
-  }
+
 header {
 	display: flex;
 	justify-content: space-between;
@@ -266,27 +264,39 @@ footer nav ul {
 	width: 100%;
 	height: 100%;
   }
-  .modal-container.active {
-	display: block;
-  }
-  .overlay {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background: #333333d3;
-  }
-  .modal {
-width: 95%;
-height: 50%;
-max-width: 500px;
-min-width: 300px;
-padding: 30px;
-background:#fff;
-position: fixed;
-top: 60%;
-left: 50%;
-transform: translate(-50%, -50%);
-  }
+  .modal-container.active::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #333333d3;
+    z-index: 1; /* Assure que l'overlay est au-dessus de la page */
+}
+
+.modal-container.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* Assure que la modal est au-dessus de l'overlay */
+}
+
+.modal {
+    width: 95%;
+    height: 50%;
+    max-width: 500px;
+    min-width: 300px;
+    padding: 30px;
+    background: #fff;
+    position: relative; 
+    z-index: 3; /* Assure que la modal est au-dessus de l'overlay */
+}
   .close-modal {
 	padding: 8px 10px;
 	border: none;
@@ -307,3 +317,17 @@ transform: translate(-50%, -50%);
   .hidden {
 	display: none;
   }
+
+  .edit-mode-banner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 30px;
+	background-color: black;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
