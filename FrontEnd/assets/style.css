@@ -312,6 +312,7 @@ footer nav ul {
   .modal h1 {
 	color: #000;
 	font-family: 'Work Sans';
+	font-weight: normal;
   }
   
   .hidden {
@@ -330,4 +331,16 @@ footer nav ul {
 	align-items: center;
 	justify-content: center;
 	z-index: 1000;
+}
+
+.modal-button {
+	font-family: 'Syne';
+	color: white;
+	background-color: #1D6154;
+	margin : 29em auto ;
+	text-align: center;
+	border-radius: 60px ;
+	border: none;
+	width: 234px;
+	height: 36px;
 }

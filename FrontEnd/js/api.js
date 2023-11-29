@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     }
   }
-
+  
   // Ajout des gestionnaires d'événements pour le filtrage par catégorie
   const allButton = document.getElementById("allButton");
   const objectsButton = document.getElementById("objectsButton");
@@ -196,7 +196,7 @@ window.onload = function () {
   });
 
   closeModalButtons.forEach(button => button.addEventListener("click", toggleModal));
-  
+
   // Ajout de la vérification pour éviter l'erreur si overlay est null
   if (overlay) {
     overlay.addEventListener("click", function (event) {
@@ -210,7 +210,6 @@ window.onload = function () {
     modalContainer.classList.toggle("active");
   }
 };
-
 function toggleEditModeBanner(isEditMode) {
   const header = document.querySelector("header");
 
@@ -252,3 +251,4 @@ function toggleEditModeBanner(isEditMode) {
     }
   }
 }
+
