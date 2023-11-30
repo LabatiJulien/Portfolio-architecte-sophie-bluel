@@ -99,21 +99,6 @@ async function sendPostRequest(formData) {
   }
 }
 
-// Fonction pour envoyer la requête POST avec le formulaire
-async function submitForm() {
-  const form = document.getElementById("myForm");
-  const formData = new FormData(form);
-
-  // Convertir la valeur de la catégorie en nombre entier
-  const category = parseInt(document.getElementById("category").value, 10);
-  
-  // Ajouter la catégorie convertie à FormData
-  formData.set("category", category);
-
-  // Appel de la fonction pour envoyer la requête POST à l'API
-  await sendPostRequest(formData);
-}
-
 // Modifier sendPostRequest pour accepter un argument formData
 async function sendPostRequest(formData) {
   const apiUrl = "http://localhost:5678/api/works";
@@ -146,6 +131,7 @@ async function sendPostRequest(formData) {
   }
 }
 
+
 // Fonction pour envoyer la requête POST avec le formulaire
 async function submitForm() {
   const form = document.getElementById("myForm");
@@ -153,7 +139,7 @@ async function submitForm() {
 
   // Convertir la valeur de la catégorie en nombre entier
   const category = parseInt(document.getElementById("category").value, 10);
-  
+
   // Ajouter la catégorie convertie à FormData
   formData.set("category", category);
 
@@ -370,6 +356,7 @@ overlay.addEventListener("click", overlayClickHandler);
   }
   
   function displayGalleryContent() {
+    console.log("Display Gallery Content Clicked");
     // Efface le contenu existant de la modale
     const modal = document.querySelector(".modal");
     modal.innerHTML = "";
