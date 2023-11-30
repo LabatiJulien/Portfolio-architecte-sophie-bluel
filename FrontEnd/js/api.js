@@ -66,9 +66,13 @@ async function fetchData() {
 
 // Fonction pour envoyer la requête POST avec la modal
 async function sendPostRequest(formData) {
-  const apiUrl = "http://localhost:5678/api/works"; 
-  const token = localStorage.getItem('token')
+  const apiUrl = "http://localhost:5678/api/works";
+  const token = localStorage.getItem('token');
+
   try {
+    // Convertir la catégorie en nombre (integer)
+    formData.set("category", parseInt(formData.get("category"), 10));
+
     const response = await fetch(apiUrl, {
       method: "POST",
       body: formData,
@@ -95,13 +99,66 @@ async function sendPostRequest(formData) {
   }
 }
 
-// Gestionnaire d'événements pour soumettre le formulaire
-function submitForm() {
+// Fonction pour envoyer la requête POST avec le formulaire
+async function submitForm() {
   const form = document.getElementById("myForm");
   const formData = new FormData(form);
 
+  // Convertir la valeur de la catégorie en nombre entier
+  const category = parseInt(document.getElementById("category").value, 10);
+  
+  // Ajouter la catégorie convertie à FormData
+  formData.set("category", category);
+
   // Appel de la fonction pour envoyer la requête POST à l'API
-  sendPostRequest(formData);
+  await sendPostRequest(formData);
+}
+
+// Modifier sendPostRequest pour accepter un argument formData
+async function sendPostRequest(formData) {
+  const apiUrl = "http://localhost:5678/api/works";
+  const token = localStorage.getItem('token');
+
+  try {
+      const response = await fetch(apiUrl, {
+          method: "POST",
+          body: formData,
+          headers: {
+              'Authorization': `Bearer ${token}`,
+          },
+      });
+
+      if (response.ok) {
+          const data = await response.json();
+          console.log("La requête POST a réussi. Statut :", response.status);
+          console.log("Réponse de l'API :", data);
+
+          // Rafraîchir la galerie après l'envoi réussi de la requête POST
+          fetchData();
+
+          // Fermer la modal
+          toggleModal();
+      } else {
+          console.error("Erreur lors de la requête POST. Statut :", response.status);
+      }
+  } catch (error) {
+      console.error("Une erreur s'est produite lors de la requête POST :", error);
+  }
+}
+
+// Fonction pour envoyer la requête POST avec le formulaire
+async function submitForm() {
+  const form = document.getElementById("myForm");
+  const formData = new FormData(form);
+
+  // Convertir la valeur de la catégorie en nombre entier
+  const category = parseInt(document.getElementById("category").value, 10);
+  
+  // Ajouter la catégorie convertie à FormData
+  formData.set("category", category);
+
+  // Appel de la fonction pour envoyer la requête POST à l'API
+  await sendPostRequest(formData);
 }
 
 function toggleEditModeBanner(isEditMode) {
@@ -227,6 +284,29 @@ document.addEventListener("DOMContentLoaded", async function () {
           filterByCategory(3);
         });
       }
+
+      // Ajout du formulaire à la modale lors de l'initialisation
+    const modal = document.querySelector(".modal");
+    const formContainer = document.createElement("div");
+    formContainer.innerHTML = `
+        <form id="myForm">
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+
+            <label for="title">Titre:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="category">Catégorie:</label>
+            <select id="category" name="category" required>
+                <option value="1">Catégorie 1</option>
+                <option value="2">Catégorie 2</option>
+                <option value="3">Catégorie 3</option>
+            </select>
+
+            <button type="button" onclick="submitForm()">Ajouter une photo</button>
+        </form>
+    `;
+    modal.appendChild(formContainer);
 
       // Ajout de la modale
       const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
