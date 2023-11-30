@@ -238,12 +238,6 @@ overlay.addEventListener("click", overlayClickHandler);
         }
     }
     
-    function overlayClickHandler() {
-        console.log("Overlay Clicked");
-        console.log("Toggle Modal from overlayClickHandler");
-        toggleModal();
-    }
-    
     function overlayClickHandler(event) {
       console.log("Overlay Clicked");
       console.log("Event target:", event.target);
@@ -334,12 +328,4 @@ overlay.addEventListener("click", overlayClickHandler);
       }
     }
   }
-  function overlayClickHandler() {
-    console.log("Overlay Clicked");
-    console.log("Toggle Modal from overlayClickHandler");
-    toggleModal();
-  }
-  // Ajoutez un gestionnaire d'événements persistant pour le clic sur l'overlay
-  const overlay = document.querySelector(".overlay");
-  overlay.addEventListener("click", overlayClickHandler);
 });
