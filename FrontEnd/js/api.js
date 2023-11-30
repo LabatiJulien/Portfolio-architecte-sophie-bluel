@@ -64,6 +64,46 @@ async function fetchData() {
   }
 }
 
+// Fonction pour envoyer la requête POST avec la modal
+async function sendPostRequest(formData) {
+  const apiUrl = "http://localhost:5678/api/works"; 
+  const token = localStorage.getItem('token')
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("La requête POST a réussi. Statut :", response.status);
+      console.log("Réponse de l'API :", data);
+
+   // Rafraîchir la galerie après l'envoi réussi de la requête POST
+   fetchData();
+
+      // Fermer la modal
+      toggleModal();
+    } else {
+      console.error("Erreur lors de la requête POST. Statut :", response.status);
+    }
+  } catch (error) {
+    console.error("Une erreur s'est produite lors de la requête POST :", error);
+  }
+}
+
+// Gestionnaire d'événements pour soumettre le formulaire
+function submitForm() {
+  const form = document.getElementById("myForm");
+  const formData = new FormData(form);
+
+  // Appel de la fonction pour envoyer la requête POST à l'API
+  sendPostRequest(formData);
+}
+
 function toggleEditModeBanner(isEditMode) {
   const header = document.querySelector("header");
 
@@ -281,6 +321,15 @@ overlay.addEventListener("click", overlayClickHandler);
     addButton.textContent = "Ajouter une photo";
     modalContent.appendChild(addButton);
   
+    // Ajoute un gestionnaire d'événements pour envoyer la requête POST lorsque le bouton est cliqué
+  addButton.addEventListener("click", function () {
+    console.log("Ajouter une photo Clicked");
+    // Appel de la fonction pour envoyer la requête POST à l'API
+    sendPostRequest();
+  });
+
+  modalContent.appendChild(addButton);
+
     // Ajoute le conteneur de la modale à la modale
     modal.appendChild(modalContent);
   
@@ -296,8 +345,6 @@ overlay.addEventListener("click", overlayClickHandler);
     modal.appendChild(closeModalButton);
   }
   
-  
-   
       if (token) {
         // Utilisateur connecté
         fetchData();
