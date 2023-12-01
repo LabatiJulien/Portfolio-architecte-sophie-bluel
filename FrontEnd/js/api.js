@@ -282,12 +282,12 @@ overlay.addEventListener("click", overlayClickHandler);
     addButton.textContent = "Ajouter une photo";
     modalContent.appendChild(addButton);
   
-    // Ajoute le conteneur de la modale à la modale
-    modal.appendChild(modalContent);
-  
     // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
   addButton.addEventListener("click", handleAddPhotoButtonClick);
-
+    
+  // Ajoute le conteneur de la modale à la modale
+    modal.appendChild(modalContent);
+  
     // Ajoute un gestionnaire d'événements pour fermer la modale
     const closeModalButton = document.createElement("button");
     closeModalButton.className = "close-modal modal-trigger";
@@ -319,10 +319,65 @@ overlay.addEventListener("click", overlayClickHandler);
 
     // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
+  // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
-  // la nouvelle modale
-}
+  // Créez la nouvelle modale container
+  const newModalContainer = document.createElement("div");
+  newModalContainer.className = "new-modal-container";
 
+ // Créez le contenu de la nouvelle modale
+ const newModalContent = document.createElement("div");
+ newModalContent.className = "new-modal";  
+  newModalContent.innerHTML = `
+   <h1>Ajout Photo</h1>
+  
+   <!-- Formulaire pour ajouter une photo -->
+   <form id="addPhotoForm">
+   <label for="photoFile">+Ajouter photo </label>
+   <input type="file" id="photoFile" name="photoFile" accept="image/*" required>
+    
+   <!-- Aperçu de la photo sélectionnée -->
+   <img id="photoPreview" alt="Aperçu de la photo" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none;">
+
+
+   <button type="submit">Valider</button>
+    
+   <label for="photoTitle">Titre de la photo:</label>
+   <input type="text" id="photoTitle" name="photoTitle" required>
+   </form>
+
+   <!-- Bouton pour fermer la nouvelle modale -->
+   <button class="close-new-modal">X</button>
+ `;
+
+ // Ajoutez le contenu de la nouvelle modale au conteneur
+ newModalContainer.appendChild(newModalContent);
+
+ // Ajoutez la nouvelle modale au document
+ document.body.appendChild(newModalContainer);
+
+ // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
+ const closeNewModalButton = newModalContent.querySelector(".close-new-modal");
+ if (closeNewModalButton) {
+   closeNewModalButton.addEventListener("click", function () {
+     // Fermez la nouvelle modale en supprimant le conteneur
+     newModalContainer.remove();
+   });
+ }
+
+ // Ajoutez une classe pour afficher la nouvelle modale
+ newModalContainer.classList.add("active");
+
+ // Ajoutez un gestionnaire d'événements au formulaire
+const addPhotoForm = newModalContent.querySelector("#addPhotoForm");
+if (addPhotoForm) {
+ addPhotoForm.addEventListener("submit", function (event) {
+   event.preventDefault();
+   // Vous pouvez ajouter ici la logique pour traiter le formulaire
+   console.log("Formulaire soumis !");
+ });
+}
+}
   }
   
       if (token) {
