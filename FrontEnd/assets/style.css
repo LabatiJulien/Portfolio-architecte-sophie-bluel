@@ -375,6 +375,17 @@ footer nav ul {
 	background: #fff;
 	font-weight: bolder;
   }
+  .new-modal-button {
+	font-family: 'Syne';
+	color: white;
+	background-color: #a7a7a7;
+	margin : 5em auto ;
+	text-align: center;
+	border-radius: 60px ;
+	border: none;
+	width: 234px;
+	height: 36px;
+}
   .edit-mode-banner {
 	position: absolute;
 	top: 0;

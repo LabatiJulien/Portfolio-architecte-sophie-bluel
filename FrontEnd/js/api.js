@@ -339,13 +339,19 @@ function handleAddPhotoButtonClick() {
    <!-- Aperçu de la photo sélectionnée -->
    <img id="photoPreview" alt="Aperçu de la photo" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none;">
 
-
-   <button type="submit">Valider</button>
-    
    <label for="photoTitle">Titre de la photo:</label>
    <input type="text" id="photoTitle" name="photoTitle" required>
    </form>
+   
+   <label for="category">Catégorie:</label>
+    <select id="category" name="category" required>
+      <option value="1">Catégorie 1</option>
+      <option value="2">Catégorie 2</option>
+      <option value="3">Catégorie 3</option>
+    </select>
 
+   <button class= "new-modal-button" type="submit">Valider</button>
+  
    <!-- Bouton pour fermer la nouvelle modale -->
    <button class="close-new-modal">X</button>
  `;
