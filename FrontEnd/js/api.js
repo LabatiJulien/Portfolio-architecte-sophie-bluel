@@ -64,89 +64,6 @@ async function fetchData() {
   }
 }
 
-// Fonction pour envoyer la requête POST avec la modal
-async function sendPostRequest(formData) {
-  const apiUrl = "http://localhost:5678/api/works";
-  const token = localStorage.getItem('token');
-
-  try {
-    // Convertir la catégorie en nombre (integer)
-    formData.set("category", parseInt(formData.get("category"), 10));
-
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      body: formData,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log("La requête POST a réussi. Statut :", response.status);
-      console.log("Réponse de l'API :", data);
-
-   // Rafraîchir la galerie après l'envoi réussi de la requête POST
-   fetchData();
-
-      // Fermer la modal
-      toggleModal();
-    } else {
-      console.error("Erreur lors de la requête POST. Statut :", response.status);
-    }
-  } catch (error) {
-    console.error("Une erreur s'est produite lors de la requête POST :", error);
-  }
-}
-
-// Modifier sendPostRequest pour accepter un argument formData
-async function sendPostRequest(formData) {
-  const apiUrl = "http://localhost:5678/api/works";
-  const token = localStorage.getItem('token');
-
-  try {
-      const response = await fetch(apiUrl, {
-          method: "POST",
-          body: formData,
-          headers: {
-              'Authorization': `Bearer ${token}`,
-          },
-      });
-
-      if (response.ok) {
-          const data = await response.json();
-          console.log("La requête POST a réussi. Statut :", response.status);
-          console.log("Réponse de l'API :", data);
-
-          // Rafraîchir la galerie après l'envoi réussi de la requête POST
-          fetchData();
-
-          // Fermer la modal
-          toggleModal();
-      } else {
-          console.error("Erreur lors de la requête POST. Statut :", response.status);
-      }
-  } catch (error) {
-      console.error("Une erreur s'est produite lors de la requête POST :", error);
-  }
-}
-
-
-// Fonction pour envoyer la requête POST avec le formulaire
-async function submitForm() {
-  const form = document.getElementById("myForm");
-  const formData = new FormData(form);
-
-  // Convertir la valeur de la catégorie en nombre entier
-  const category = parseInt(document.getElementById("category").value, 10);
-
-  // Ajouter la catégorie convertie à FormData
-  formData.set("category", category);
-
-  // Appel de la fonction pour envoyer la requête POST à l'API
-  await sendPostRequest(formData);
-}
-
 function toggleEditModeBanner(isEditMode) {
   const header = document.querySelector("header");
 
@@ -271,29 +188,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
       }
 
-      // Ajout du formulaire à la modale lors de l'initialisation
-    const modal = document.querySelector(".modal");
-    const formContainer = document.createElement("div");
-    formContainer.innerHTML = `
-        <form id="myForm">
-            <label for="image">Image:</label>
-            <input type="file" id="image" name="image" accept="image/*" required>
-
-            <label for="title">Titre:</label>
-            <input type="text" id="title" name="title" required>
-
-            <label for="category">Catégorie:</label>
-            <select id="category" name="category" required>
-                <option value="1">Catégorie 1</option>
-                <option value="2">Catégorie 2</option>
-                <option value="3">Catégorie 3</option>
-            </select>
-
-            <button type="button" onclick="submitForm()">Ajouter une photo</button>
-        </form>
-    `;
-    modal.appendChild(formContainer);
-
       // Ajout de la modale
       const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
       const overlay = document.querySelector(".overlay");
@@ -388,18 +282,12 @@ overlay.addEventListener("click", overlayClickHandler);
     addButton.textContent = "Ajouter une photo";
     modalContent.appendChild(addButton);
   
-    // Ajoute un gestionnaire d'événements pour envoyer la requête POST lorsque le bouton est cliqué
-  addButton.addEventListener("click", function () {
-    console.log("Ajouter une photo Clicked");
-    // Appel de la fonction pour envoyer la requête POST à l'API
-    sendPostRequest();
-  });
-
-  modalContent.appendChild(addButton);
-
     // Ajoute le conteneur de la modale à la modale
     modal.appendChild(modalContent);
   
+    // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
+  addButton.addEventListener("click", handleAddPhotoButtonClick);
+
     // Ajoute un gestionnaire d'événements pour fermer la modale
     const closeModalButton = document.createElement("button");
     closeModalButton.className = "close-modal modal-trigger";
@@ -410,6 +298,31 @@ overlay.addEventListener("click", overlayClickHandler);
     });
   
     modal.appendChild(closeModalButton);
+    // Ajout des gestionnaires d'événements de la nouvelle modal
+    const newModalTrigger = document.getElementById("boutonAjoutdePhoto");
+    const closeNewModalButton = document.querySelector(".close-new-modal");
+
+    if (newModalTrigger && closeNewModalButton) {
+        newModalTrigger.addEventListener("click", function () {
+            toggleNewModal();
+        });
+
+        closeNewModalButton.addEventListener("click", function () {
+            toggleNewModal();
+        });
+    }
+
+    function toggleNewModal() {
+        const newModalContainer = document.querySelector(".new-modal-container");
+        newModalContainer.classList.toggle("active");
+    }
+
+    // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
+function handleAddPhotoButtonClick() {
+  console.log("Bouton 'Ajouter une photo' cliqué !");
+  // la nouvelle modale
+}
+
   }
   
       if (token) {

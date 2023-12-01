@@ -50,26 +50,12 @@
 		  <div class="modal">
 			<button class="close-modal modal-trigger">X</button>
 			<h1>Galerie photo</h1>
-			<form id="myForm">
-				<label for="image">Image:</label>
-				<input type="file" id="image" name="image" accept="image/*" required>
-		
-				<label for="title">Titre:</label>
-				<input type="text" id="title" name="title" required>
-		
-				<label for="category">Catégorie:</label>
-				<select id="category" name="category" required>
-				  <option value="1">Catégorie 1</option>
-				  <option value="2">Catégorie 2</option>
-				  <option value="3">Catégorie 3</option>
-				</select>
-		
-				<button type="button" onclick="submitForm()">Ajouter une photo</button>
-			  </form>
 			<button id="boutonAjoutdePhoto" class="modal-button">Ajouter une photo</button>
 		  </div>
 		</div>
-		<div id="categoryButtons">
+			<div class="overlay modal-trigger"></div>
+		
+			<div id="categoryButtons">
 		  <button id="allButton">Tous</button>
 		  <button id="objectsButton">Objets</button>
 		  <button id="apartmentsButton">Appartements</button>
