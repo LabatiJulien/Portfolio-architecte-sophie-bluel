@@ -349,6 +349,7 @@ overlay.addEventListener("click", overlayClickHandler);
 
  // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
+ 
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
