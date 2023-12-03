@@ -317,7 +317,7 @@ overlay.addEventListener("click", overlayClickHandler);
         newModalContainer.classList.toggle("active");
     }
 
-   // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
+  // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
@@ -334,28 +334,27 @@ function handleAddPhotoButtonClick() {
 
     <!-- Formulaire pour ajouter une photo -->
     <div>
-    <form id="addPhotoForm">
-      
-       <input type="file" id="photoFile" name="photoFile" accept="image/*" required onchange="previewImage(event)">
-        
-       <!-- Aperçu de la photo sélectionnée -->
-       <img id="photoPreview"  style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+      <form id="addPhotoForm">
 
-       <h2>Titre de la photo:</h2>
-       <input type="text" id="photoTitle" name="photoTitle" required>
+        <input type="file" id="photoFile" name="photoFile" accept="image/*" required onchange="previewImage(event)">
 
-       <h2>Catégorie:</h2>
-       <select id="category" name="category" required>
+        <!-- Aperçu de la photo sélectionnée -->
+        <img id="photoPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+
+        <h2>Titre de la photo:</h2>
+        <input type="text" id="photoTitle" name="photoTitle" required>
+
+        <h2>Catégorie:</h2>
+        <select id="category" name="category" required>
           <option value=""></option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-       </select>
+          <option value="1">Objets</option>
+          <option value="2">Appartements</option>
+          <option value="3">Hotels & restaurants</option>
+        </select>
 
-       <button class="new-modal-button" type="submit">Valider</button>
-   </div>
-       </form>
-
+        <button class="new-modal-button" type="submit">Valider</button>
+      </form>
+    </div>
     <!-- Bouton pour fermer la nouvelle modale -->
     <button class="close-new-modal">X</button>
   `;
@@ -402,15 +401,41 @@ function handleAddPhotoButtonClick() {
   // Ajoutez une classe pour afficher la nouvelle modale
   newModalContainer.classList.add("active");
 
-  // Ajoutez un gestionnaire d'événements au formulaire
-  const addPhotoForm = newModalContent.querySelector("#addPhotoForm");
-  if (addPhotoForm) {
-    addPhotoForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      // Vous pouvez ajouter ici la logique pour traiter le formulaire
-      console.log("Formulaire soumis !");
-    });
-  }
+ // Ajoutez un gestionnaire d'événements au formulaire
+const addPhotoForm = newModalContent.querySelector("#addPhotoForm");
+if (addPhotoForm) {
+  addPhotoForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    // Collectez les données du formulaire
+    const formData = new FormData();
+    formData.append("image", document.getElementById("photoFile").files[0]);
+    formData.append("title", document.getElementById("photoTitle").value);
+    formData.append("category", document.getElementById("category").value);
+
+    // Effectuez la demande POST à l'API
+    fetch("http://localhost:5678/api/works", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcwMTU3NzkwOSwiZXhwIjoxNzAxNjY0MzA5fQ.vF5GGpGo2N0fU7Bdv0rMkgEbDhLJt1Qml7xNGUnFjpY",
+        "Accept": "application/json",
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Traitez la réponse de l'API ici
+        console.log("Réponse de l'API :", data);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la demande POST :", error);
+      })
+      .finally(() => {
+        // Fermez la nouvelle modale en supprimant le conteneur
+        newModalContainer.remove();
+      });
+  });
+}
 
   // Ajoutez la nouvelle modale au document
   document.body.appendChild(newModalContainer);
