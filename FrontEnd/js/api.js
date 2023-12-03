@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
       const overlay = document.querySelector(".overlay");
       const galleryContent = document.getElementById("gallery");
-
+      
       // Ajoutez un gestionnaire d'événements persistant pour le clic sur l'overlay
 overlay.addEventListener("click", overlayClickHandler);
 
@@ -224,8 +224,14 @@ overlay.addEventListener("click", overlayClickHandler);
       function toggleModal() {
         console.log("Toggle Modal");
         const modalContainer = document.querySelector(".modal-container");
-        const overlay = document.querySelector(".overlay");
-    
+        function detachEventListeners() {
+         
+          // Détachez les gestionnaires d'événements de la première modal
+          overlay.removeEventListener("click", overlayClickHandler);
+        }
+        // Détachez les gestionnaires d'événements de la première modal
+  detachEventListeners();
+
         // Inverse la classe pour afficher ou masquer la modale
         modalContainer.classList.toggle("active");
     
@@ -313,11 +319,29 @@ overlay.addEventListener("click", overlayClickHandler);
     }
 
     function toggleNewModal() {
-        const newModalContainer = document.querySelector(".new-modal-container");
-        newModalContainer.classList.toggle("active");
-    }
-
-    // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
+      const existingModal = document.querySelector(".new-modal-container");
+      if (existingModal) {
+        // Détachez le gestionnaire d'événements avant de supprimer la modal
+        const overlay = existingModal.querySelector(".overlay");
+        overlay.removeEventListener("click", overlayClickHandler);
+        existingModal.remove();
+      } else {
+        // Créez la nouvelle modal et ajoutez-la à la page
+        const newModalContainer = document.createElement("div");
+        newModalContainer.className = "modal-container new-modal-container";
+    
+  
+          // ... (ajoutez le contenu de votre nouvelle modal ici)
+  
+          document.body.appendChild(newModalContainer);
+  
+          // Ajoutez une classe pour afficher la nouvelle modal
+          newModalContainer.classList.add("active");
+      }
+  }
+  
+ 
+  // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
