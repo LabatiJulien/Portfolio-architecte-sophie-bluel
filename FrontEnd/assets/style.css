@@ -360,6 +360,25 @@ footer nav ul {
 	margin: 30px;
 	text-align: center;
   }
+  .new-modal h2 {
+color: #3D3D3D;
+font-family: Work Sans;
+font-size: 14px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+text-align: center;
+ }
+
+ /* Styles pour les champs de saisie et les menus déroulants */
+.new-modal input,
+.new-modal select {
+   width: 100%;
+   padding: 10px;
+   margin-bottom: 20px;
+   box-sizing: border-box;
+}
+
   .close-new-modal {
 	padding: 8px 10px;
 	border: none;
@@ -382,7 +401,9 @@ footer nav ul {
 	border: none;
 	width: 234px;
 	height: 36px;
+	display: block;
 }
+
   .edit-mode-banner {
 	position: absolute;
 	top: 0;

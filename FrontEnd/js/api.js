@@ -333,26 +333,28 @@ function handleAddPhotoButtonClick() {
     <h1>Ajout Photo</h1>
 
     <!-- Formulaire pour ajouter une photo -->
+    <div>
     <form id="addPhotoForm">
-       <label for="photoFile">+Ajouter photo </label>
+      
        <input type="file" id="photoFile" name="photoFile" accept="image/*" required onchange="previewImage(event)">
         
        <!-- Aperçu de la photo sélectionnée -->
-       <img id="photoPreview" alt="Aperçu de la photo" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+       <img id="photoPreview"  style="max-width: 100%; max-height: 200px; margin-top: 10px;">
 
-       <label for="photoTitle">Titre de la photo:</label>
+       <h2>Titre de la photo:</h2>
        <input type="text" id="photoTitle" name="photoTitle" required>
 
-       <label for="category">Catégorie:</label>
+       <h2>Catégorie:</h2>
        <select id="category" name="category" required>
-          <option value="">Sélectionnez une catégorie</option>
+          <option value=""></option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
        </select>
 
        <button class="new-modal-button" type="submit">Valider</button>
-    </form>
+   </div>
+       </form>
 
     <!-- Bouton pour fermer la nouvelle modale -->
     <button class="close-new-modal">X</button>
