@@ -325,6 +325,28 @@ overlay.addEventListener("click", overlayClickHandler);
         newModalContainer.classList.toggle("active");
     }
 
+    async function updateGallery() {
+      const apiUrl = "http://localhost:5678/api/works";
+      try {
+        const response = await fetch(apiUrl);
+    
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
+    
+          // Appel de la fonction pour afficher dynamiquement les travaux
+          displayGalleryItems(data);
+    
+          // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
+          window.allWorks = data;
+        } else {
+          console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
+        }
+      } catch (error) {
+        console.error("Une erreur s'est produite lors de la requête :", error);
+      }
+    }
+
  // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
@@ -450,20 +472,27 @@ function handleAddPhotoButtonClick() {
 
   // Fonction pour mettre à jour la liste de photos
   function updatePhotoList(newPhotoData) {
+   
     // Vous devez accéder au conteneur de la galerie où vous affichez les photos
     const galleryContainer = document.getElementById("gallery");
 
     // Créez un nouvel élément img pour la nouvelle photo
     const newPhotoElement = document.createElement("img");
+
     newPhotoElement.src = newPhotoData.url; // Assurez-vous que votre API renvoie l'URL de la nouvelle photo
-    // Ajoutez d'autres attributs ou styles selon vos besoins
+    
+    newPhotoElement.alt = newPhotoData.title;
 
     // Ajoutez la nouvelle photo au début de la liste (vous pouvez ajuster selon vos besoins)
     galleryContainer.insertBefore(newPhotoElement, galleryContainer.firstChild);
+
+     // Mise à jour de la liste existante de photos
+  updateGallery();
   }
 
   // Ajoutez la nouvelle modale au document
   document.body.appendChild(newModalContainer);
+
 }
 
   }
