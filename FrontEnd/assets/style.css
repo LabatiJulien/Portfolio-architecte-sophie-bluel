@@ -404,6 +404,10 @@ text-align: center;
 	display: block;
 }
 
+.hidden {
+	display: none;
+  }
+  
   .edit-mode-banner {
 	position: absolute;
 	top: 0;
