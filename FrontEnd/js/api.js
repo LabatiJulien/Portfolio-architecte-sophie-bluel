@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
       const overlay = document.querySelector(".overlay");
       const galleryContent = document.getElementById("gallery");
-      
+
       // Ajoutez un gestionnaire d'événements persistant pour le clic sur l'overlay
 overlay.addEventListener("click", overlayClickHandler);
 
@@ -224,14 +224,8 @@ overlay.addEventListener("click", overlayClickHandler);
       function toggleModal() {
         console.log("Toggle Modal");
         const modalContainer = document.querySelector(".modal-container");
-        function detachEventListeners() {
-         
-          // Détachez les gestionnaires d'événements de la première modal
-          overlay.removeEventListener("click", overlayClickHandler);
-        }
-        // Détachez les gestionnaires d'événements de la première modal
-  detachEventListeners();
-
+        const overlay = document.querySelector(".overlay");
+    
         // Inverse la classe pour afficher ou masquer la modale
         modalContainer.classList.toggle("active");
     
@@ -319,95 +313,107 @@ overlay.addEventListener("click", overlayClickHandler);
     }
 
     function toggleNewModal() {
-      const existingModal = document.querySelector(".new-modal-container");
-      if (existingModal) {
-        // Détachez le gestionnaire d'événements avant de supprimer la modal
-        const overlay = existingModal.querySelector(".overlay");
-        overlay.removeEventListener("click", overlayClickHandler);
-        existingModal.remove();
-      } else {
-        // Créez la nouvelle modal et ajoutez-la à la page
-        const newModalContainer = document.createElement("div");
-        newModalContainer.className = "modal-container new-modal-container";
-    
-  
-          // ... (ajoutez le contenu de votre nouvelle modal ici)
-  
-          document.body.appendChild(newModalContainer);
-  
-          // Ajoutez une classe pour afficher la nouvelle modal
-          newModalContainer.classList.add("active");
-      }
-  }
-  
- 
-  // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
+        const newModalContainer = document.querySelector(".new-modal-container");
+        newModalContainer.classList.toggle("active");
+    }
+
+   // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
+
   // Créez la nouvelle modale container
   const newModalContainer = document.createElement("div");
   newModalContainer.className = "new-modal-container";
 
- // Créez le contenu de la nouvelle modale
- const newModalContent = document.createElement("div");
- newModalContent.className = "new-modal";  
+  // Créez le contenu de la nouvelle modale
+  const newModalContent = document.createElement("div");
+  newModalContent.className = "new-modal";
   newModalContent.innerHTML = `
-   <h1>Ajout Photo</h1>
-  
-   <!-- Formulaire pour ajouter une photo -->
-   <form id="addPhotoForm">
-   <label for="photoFile">+Ajouter photo </label>
-   <input type="file" id="photoFile" name="photoFile" accept="image/*" required>
-    
-   <!-- Aperçu de la photo sélectionnée -->
-   <img id="photoPreview" alt="Aperçu de la photo" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none;">
+    <h1>Ajout Photo</h1>
 
-   <label for="photoTitle">Titre de la photo:</label>
-   <input type="text" id="photoTitle" name="photoTitle" required>
-   </form>
-   
-   <label for="category">Catégorie:</label>
-    <select id="category" name="category" required>
-      <option value="1">Catégorie 1</option>
-      <option value="2">Catégorie 2</option>
-      <option value="3">Catégorie 3</option>
-    </select>
+    <!-- Formulaire pour ajouter une photo -->
+    <form id="addPhotoForm">
+       <label for="photoFile">+Ajouter photo </label>
+       <input type="file" id="photoFile" name="photoFile" accept="image/*" required onchange="previewImage(event)">
+        
+       <!-- Aperçu de la photo sélectionnée -->
+       <img id="photoPreview" alt="Aperçu de la photo" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
 
-   <button class= "new-modal-button" type="submit">Valider</button>
-  
-   <!-- Bouton pour fermer la nouvelle modale -->
-   <button class="close-new-modal">X</button>
- `;
+       <label for="photoTitle">Titre de la photo:</label>
+       <input type="text" id="photoTitle" name="photoTitle" required>
 
- // Ajoutez le contenu de la nouvelle modale au conteneur
- newModalContainer.appendChild(newModalContent);
+       <label for="category">Catégorie:</label>
+       <select id="category" name="category" required>
+          <option value="">Sélectionnez une catégorie</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+       </select>
 
- // Ajoutez la nouvelle modale au document
- document.body.appendChild(newModalContainer);
+       <button class="new-modal-button" type="submit">Valider</button>
+    </form>
 
- // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
- const closeNewModalButton = newModalContent.querySelector(".close-new-modal");
- if (closeNewModalButton) {
-   closeNewModalButton.addEventListener("click", function () {
-     // Fermez la nouvelle modale en supprimant le conteneur
-     newModalContainer.remove();
-   });
- }
+    <!-- Bouton pour fermer la nouvelle modale -->
+    <button class="close-new-modal">X</button>
+  `;
 
- // Ajoutez une classe pour afficher la nouvelle modale
- newModalContainer.classList.add("active");
+  // Ajoutez le contenu de la nouvelle modale au conteneur
+  newModalContainer.appendChild(newModalContent);
 
- // Ajoutez un gestionnaire d'événements au formulaire
-const addPhotoForm = newModalContent.querySelector("#addPhotoForm");
-if (addPhotoForm) {
- addPhotoForm.addEventListener("submit", function (event) {
-   event.preventDefault();
-   // Vous pouvez ajouter ici la logique pour traiter le formulaire
-   console.log("Formulaire soumis !");
- });
+  // Créez un élément script pour le code JavaScript
+  const scriptElement = document.createElement("script");
+  scriptElement.text = `
+    function previewImage(event) {
+      var input = event.target;
+      var preview = document.getElementById('photoPreview');
+      var file = input.files[0];
+
+      if (file) {
+         var reader = new FileReader();
+
+         reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+         }
+
+         reader.readAsDataURL(file);
+      } else {
+         preview.src = '';
+         preview.style.display = 'none';
+      }
+    }
+  `;
+
+  // Ajoutez le script au document
+  document.body.appendChild(scriptElement);
+
+  // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
+  const closeNewModalButton = newModalContent.querySelector(".close-new-modal");
+  if (closeNewModalButton) {
+    closeNewModalButton.addEventListener("click", function () {
+      // Fermez la nouvelle modale en supprimant le conteneur
+      newModalContainer.remove();
+    });
+  }
+
+  // Ajoutez une classe pour afficher la nouvelle modale
+  newModalContainer.classList.add("active");
+
+  // Ajoutez un gestionnaire d'événements au formulaire
+  const addPhotoForm = newModalContent.querySelector("#addPhotoForm");
+  if (addPhotoForm) {
+    addPhotoForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      // Vous pouvez ajouter ici la logique pour traiter le formulaire
+      console.log("Formulaire soumis !");
+    });
+  }
+
+  // Ajoutez la nouvelle modale au document
+  document.body.appendChild(newModalContainer);
 }
-}
+
   }
   
       if (token) {
