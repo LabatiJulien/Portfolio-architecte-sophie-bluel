@@ -25,6 +25,7 @@ function displayGalleryItems(data) {
 
 // Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
+ 
   // Récupère tous les travaux depuis la variable globale
   const allWorks = window.allWorks || [];
 
@@ -69,8 +70,10 @@ function toggleEditModeBanner(isEditMode) {
 
   // Vérifie si l'élément du header existe
   if (header) {
+   
     // Vérifie si le mode édition est activé
     if (isEditMode) {
+     
       // Crée la bande noire avec le texte "Mode édition"
       const editModeBanner = document.createElement("div");
       editModeBanner.className = "edit-mode-banner";
@@ -95,6 +98,7 @@ function toggleEditModeBanner(isEditMode) {
       // Ajoute une classe au header pour ajuster la position
       header.classList.add("header-with-banner");
     } else {
+      
       // Supprime la bande noire et la classe du header
       const editModeBanner = document.querySelector(".edit-mode-banner");
       if (editModeBanner) {
@@ -116,7 +120,7 @@ function isLoggedIn() {
 function updateFilterVisibility() {
   const filtersContainer = document.getElementById("categoryButtons");
   if (filtersContainer) {
-    // Vous pouvez ajuster la logique de visibilité des filtres ici
+    
     filtersContainer.classList.toggle("hidden", isLoggedIn());
   }
 }
@@ -128,6 +132,7 @@ function updateLoginLogoutButton() {
   const filtersContainer = document.getElementById("categoryButtons"); 
 
   if (token) {
+   
     // Utilisateur connecté
     // Remplace le lien "Login" par le bouton "Logout"
     if (loginLink && logoutButton) {
@@ -139,6 +144,7 @@ function updateLoginLogoutButton() {
 
     toggleEditModeBanner(true);
   } else {
+   
     // Utilisateur non connecté
     // Remplace le bouton "Logout" par le lien "Login"
     if (logoutButton && loginLink) {
@@ -160,9 +166,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   const isIndexPage = window.location.pathname.includes("index.html");
 
   if (isIndexPage) {
+   
     // Vérifie si l'élément "gallery" existe sur la page
     const galleryDiv = document.getElementById("gallery");
     if (galleryDiv) {
+     
       // Vérifie si un token est présent dans le stockage local
       const token = localStorage.getItem('token');
 
@@ -306,6 +314,7 @@ overlay.addEventListener("click", overlayClickHandler);
     });
   
     modal.appendChild(closeModalButton);
+   
     // Ajout des gestionnaires d'événements de la nouvelle modal
     const newModalTrigger = document.getElementById("boutonAjoutdePhoto");
     const closeNewModalButton = document.querySelector(".close-new-modal");
@@ -349,6 +358,7 @@ overlay.addEventListener("click", overlayClickHandler);
 
 // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
+ 
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
@@ -487,7 +497,6 @@ function handleAddPhotoButtonClick() {
   document.body.appendChild(newModalContainer);
 }
 
-
   }
   
       if (token) {
@@ -499,8 +508,10 @@ function handleAddPhotoButtonClick() {
         logoutButton.id = "logoutButton";
         logoutButton.textContent = "Logout";
         logoutButton.addEventListener("click", function () {
+         
           // Déconnectez l'utilisateur en supprimant le token
           localStorage.removeItem('token');
+         
           // Redirigez l'utilisateur vers la page de connexion
           window.location.href = "/login/login.html";
         });
@@ -512,7 +523,7 @@ function handleAddPhotoButtonClick() {
         }
       } else {
         // Utilisateur non connecté
-        // Vous pouvez également masquer ou désactiver des éléments réservés aux utilisateurs authentifiés
+        
         console.log("L'utilisateur n'est pas connecté.");
 
         // Appel de la fonction pour afficher dynamiquement les travaux même pour les utilisateurs non connectés
