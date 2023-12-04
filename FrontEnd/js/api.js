@@ -347,9 +347,8 @@ overlay.addEventListener("click", overlayClickHandler);
       }
     }
 
- // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
+// Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 function handleAddPhotoButtonClick() {
- 
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
@@ -435,66 +434,59 @@ function handleAddPhotoButtonClick() {
   // Ajoutez un gestionnaire d'événements au formulaire
   const addPhotoForm = newModalContent.querySelector("#addPhotoForm");
   if (addPhotoForm) {
-    addPhotoForm.addEventListener("submit", function (event) {
+    addPhotoForm.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      // Collectez les données du formulaire
       const formData = new FormData();
       formData.append("image", document.getElementById("photoFile").files[0]);
       formData.append("title", document.getElementById("photoTitle").value);
       formData.append("category", document.getElementById("category").value);
 
-      // Effectuez la demande POST à l'API
-      fetch("http://localhost:5678/api/works", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcwMTU3NzkwOSwiZXhwIjoxNzAxNjY0MzA5fQ.vF5GGpGo2N0fU7Bdv0rMkgEbDhLJt1Qml7xNGUnFjpY",
-          "Accept": "application/json",
-        },
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // Traitez la réponse de l'API ici
-          console.log("Réponse de l'API :", data);
-
-          // Mise à jour de la liste existante de photos
-          updatePhotoList(data);
-        })
-        .catch((error) => {
-          console.error("Erreur lors de la demande POST :", error);
-        })
-        .finally(() => {
-          // Fermez la nouvelle modale en supprimant le conteneur
-          newModalContainer.remove();
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch("http://localhost:5678/api/works", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+          },
+          body: formData,
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Réponse de l'API :", data);
+
+        updatePhotoList(data);
+      } catch (error) {
+        console.error("Erreur lors de la demande POST :", error);
+      } finally {
+        newModalContainer.remove();
+      }
     });
   }
 
   // Fonction pour mettre à jour la liste de photos
   function updatePhotoList(newPhotoData) {
-   
-    // Vous devez accéder au conteneur de la galerie où vous affichez les photos
     const galleryContainer = document.getElementById("gallery");
-
-    // Créez un nouvel élément img pour la nouvelle photo
     const newPhotoElement = document.createElement("img");
 
-    newPhotoElement.src = newPhotoData.url; // Assurez-vous que votre API renvoie l'URL de la nouvelle photo
-    
+    newPhotoElement.src = newPhotoData.url;
     newPhotoElement.alt = newPhotoData.title;
 
-    // Ajoutez la nouvelle photo au début de la liste (vous pouvez ajuster selon vos besoins)
     galleryContainer.insertBefore(newPhotoElement, galleryContainer.firstChild);
 
-     // Mise à jour de la liste existante de photos
-  updateGallery();
+    // Mise à jour de la liste existante de photos
+    updateGallery();
   }
 
   // Ajoutez la nouvelle modale au document
   document.body.appendChild(newModalContainer);
-
 }
+
 
   }
   
