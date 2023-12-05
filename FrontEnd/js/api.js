@@ -333,7 +333,6 @@ overlay.addEventListener("click", overlayClickHandler);
         const newModalContainer = document.querySelector(".new-modal-container");
         newModalContainer.classList.toggle("active");
     }
-
     async function updateGallery() {
       const apiUrl = "http://localhost:5678/api/works";
       try {
@@ -502,30 +501,6 @@ async function handleAddPhotoButtonClick() {
   // Ajoutez la nouvelle modale au document
   document.body.appendChild(newModalContainer);
 
- // Fonction pour mettre à jour la liste de photos
-function updateGallery() {
-  const apiUrl = "http://localhost:5678/api/works";
-  fetch(apiUrl)
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-    })
-    .then(data => {
-      console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
-
-      // Appel de la fonction pour afficher dynamiquement les travaux
-      displayGalleryItems(data);
-
-      // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
-      window.allWorks = data;
-    })
-    .catch(error => {
-      console.error("Une erreur s'est produite lors de la requête :", error);
-    });
-}
 }
 
   }
