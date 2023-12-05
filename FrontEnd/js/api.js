@@ -158,7 +158,6 @@ function updateLoginLogoutButton() {
   }
 }
 
-
 document.addEventListener("DOMContentLoaded", async function () {
   console.log("DOM Content Loaded. Calling fetchData...");
 
@@ -237,34 +236,32 @@ overlay.addEventListener("click", overlayClickHandler);
         });
       }
 
-      function toggleModal() {
-        console.log("Toggle Modal");
-        const modalContainer = document.querySelector(".modal-container");
-        const overlay = document.querySelector(".overlay");
-    
-        // Inverse la classe pour afficher ou masquer la modale
-        modalContainer.classList.toggle("active");
-    
-        if (modalContainer.classList.contains("active")) {
-            // Ajoute un gestionnaire d'événements pour fermer la modale en cliquant sur l'overlay
-            overlay.addEventListener("click", overlayClickHandler);
-        } else {
-            // Supprime le gestionnaire d'événements lorsqu'on ferme la modale
-            overlay.removeEventListener("click", overlayClickHandler);
-        }
-    }
-    
-    function overlayClickHandler(event) {
-      console.log("Overlay Clicked");
-      console.log("Event target:", event.target);
-      console.log("Overlay:", overlay);
-      
-      if (event.target.classList.contains('overlay')) {
-          console.log("Toggle Modal from overlayClickHandler");
-          toggleModal();
-      }
+    // Déclaration de la fonction pour gérer le clic sur l'overlay
+function overlayClickHandler(event) {
+  console.log("Overlay Clicked");
+  if (event.target.classList.contains('overlay')) {
+    toggleModal();
   }
-  
+}
+
+// Déclaration de la fonction pour afficher ou masquer la modale
+function toggleModal() {
+  console.log("Toggle Modal");
+  const modalContainer = document.querySelector(".modal-container");
+  const overlay = document.querySelector(".overlay");
+
+  // Inverse la classe pour afficher ou masquer la modale
+  modalContainer.classList.toggle("active");
+
+  // Ajoute ou supprime le gestionnaire d'événements sur l'overlay
+  if (modalContainer.classList.contains("active")) {
+    overlay.addEventListener("click", overlayClickHandler);
+  } else {
+    overlay.removeEventListener("click", overlayClickHandler);
+  }
+}
+
+    
   function displayGalleryContent() {
     console.log("Display Gallery Content Clicked");
     // Efface le contenu existant de la modale
