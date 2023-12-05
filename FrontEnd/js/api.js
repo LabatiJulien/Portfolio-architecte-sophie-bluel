@@ -357,7 +357,7 @@ overlay.addEventListener("click", overlayClickHandler);
     }
 
 // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
-function handleAddPhotoButtonClick() {
+async function handleAddPhotoButtonClick() {
  
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
@@ -433,6 +433,7 @@ function handleAddPhotoButtonClick() {
   const closeNewModalButton = newModalContent.querySelector(".close-new-modal");
   if (closeNewModalButton) {
     closeNewModalButton.addEventListener("click", function () {
+      
       // Fermez la nouvelle modale en supprimant le conteneur
       newModalContainer.remove();
     });
@@ -478,23 +479,53 @@ function handleAddPhotoButtonClick() {
       }
     });
   }
-
-  // Fonction pour mettre à jour la liste de photos
+  
   function updatePhotoList(newPhotoData) {
+    console.log("Ajout à la galerie principale : ", newPhotoData.imageUrl);
+  
     const galleryContainer = document.getElementById("gallery");
+    console.log("Container de la galerie principale : ", galleryContainer);
+  
     const newPhotoElement = document.createElement("img");
-
-    newPhotoElement.src = newPhotoData.url;
+    newPhotoElement.src = newPhotoData.imageUrl;
     newPhotoElement.alt = newPhotoData.title;
-
-    galleryContainer.insertBefore(newPhotoElement, galleryContainer.firstChild);
-
-    // Mise à jour de la liste existante de photos
+    
+    console.log("Nouvel élément image : ", newPhotoElement);
+  
+    galleryContainer.appendChild(newPhotoElement);
+  
+    console.log("Mise à jour de la liste existante de photos");
     updateGallery();
   }
+  
 
   // Ajoutez la nouvelle modale au document
   document.body.appendChild(newModalContainer);
+
+ // Fonction pour mettre à jour la liste de photos
+function updateGallery() {
+  const apiUrl = "http://localhost:5678/api/works";
+  fetch(apiUrl)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    })
+    .then(data => {
+      console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
+
+      // Appel de la fonction pour afficher dynamiquement les travaux
+      displayGalleryItems(data);
+
+      // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
+      window.allWorks = data;
+    })
+    .catch(error => {
+      console.error("Une erreur s'est produite lors de la requête :", error);
+    });
+}
 }
 
   }
