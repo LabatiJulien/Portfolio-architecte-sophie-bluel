@@ -276,17 +276,25 @@ function toggleModal() {
     title.textContent = "Galerie photo";
     modalContent.appendChild(title);
   
-    // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
-    const galleryClone = galleryContent.cloneNode(true);
-    galleryClone.classList.add("modal-gallery");
-  
-    // Supprime le texte (figcaption) de chaque figure dans la galerie clonée
-    const figures = galleryClone.querySelectorAll("figure");
-    figures.forEach(figure => {
-      figure.removeChild(figure.querySelector("figcaption"));
-    });
-  
-    modalContent.appendChild(galleryClone);
+  // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
+  const galleryClone = galleryContent.cloneNode(true);
+  galleryClone.classList.add("modal-gallery");
+
+  // Supprime le texte (figcaption) de chaque figure dans la galerie clonée
+  const figures = galleryClone.querySelectorAll("figure");
+  figures.forEach(figure => {
+    figure.removeChild(figure.querySelector("figcaption"));
+
+     // Crée l'icône cliquable et l'ajoute à la figure
+     const trashIcon = document.createElement("i");
+     trashIcon.className = "fa-regular fa-trash-can";
+     trashIcon.style.color = "#000000";
+     trashIcon.addEventListener("click", handleTrashIconClick); // Ajoutez votre gestionnaire d'événements ici
+
+     figure.appendChild(trashIcon);
+  });
+
+  modalContent.appendChild(galleryClone);
   
     // Ajoute le bouton "Ajouter une photo" à la modale
     const addButton = document.createElement("button");
@@ -312,6 +320,11 @@ function toggleModal() {
   
     modal.appendChild(closeModalButton);
    
+    // Gestionnaire d'événements pour l'icône de la corbeille
+function handleTrashIconClick() {
+  console.log("Trash Icon Clicked");
+}
+
     // Ajout des gestionnaires d'événements de la nouvelle modal
     const newModalTrigger = document.getElementById("boutonAjoutdePhoto");
     const closeNewModalButton = document.querySelector(".close-new-modal");
