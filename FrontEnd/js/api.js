@@ -262,7 +262,92 @@ function toggleModal() {
   }
 }
 
-    
+async function updateGallery() {
+  const apiUrl = "http://localhost:5678/api/works";
+  try {
+    const response = await fetch(apiUrl);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
+
+      // Appel de la fonction pour afficher dynamiquement les travaux
+      displayGalleryItems(data);
+
+      // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
+      window.allWorks = data;
+    } else {
+      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
+    }
+  } catch (error) {
+    console.error("Une erreur s'est produite lors de la requête :", error);
+  }
+}
+
+
+// Gestionnaire d'événements pour l'icône de la corbeille
+function handleTrashIconClick(event) {
+  const figureElement = event.target.closest("figure"); // Trouve l'élément figure parent
+  if (!figureElement) {
+    console.error("Figure element not found.");
+    return;
+  }
+
+  const imageId = figureElement.dataset.id; // Récupère l'ID de l'image depuis l'attribut data-id
+  if (!imageId) {
+    console.error("Image ID not found.");
+    return;
+  }
+
+  // Effectuez la demande de suppression à l'API en utilisant imageId
+  deleteImage(imageId);
+
+  // Retirez l'élément figure de la galerie côté client
+  figureElement.remove();
+}
+
+async function deleteImage(imageId) {
+const apiUrl = `http://localhost:5678/api/works/${imageId}`;
+try {
+  const response = await fetch(apiUrl, {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  console.log("Réponse de l'API (Suppression) :", response.statusText);
+
+  // Mettez à jour la galerie côté client après la suppression
+  updateGallery();
+} catch (error) {
+  console.error("Erreur lors de la demande DELETE :", error);
+}
+}
+
+  // Création des icônes de corbeille 
+function createTrashIcons(figures) {
+  figures.forEach(figure => {
+    figure.removeChild(figure.querySelector("figcaption"));
+
+    const trashIcon = document.createElement("i");
+    trashIcon.className = "fa-regular fa-trash-can";
+    trashIcon.style.color = "#000000";
+    trashIcon.addEventListener("click", handleTrashIconClick);
+
+    const iconContainer = document.createElement("div");
+    iconContainer.className = "icon-container";
+    iconContainer.appendChild(trashIcon);
+
+    figure.appendChild(iconContainer);
+  });
+}  
+
   function displayGalleryContent() {
     console.log("Display Gallery Content Clicked");
     // Efface le contenu existant de la modale
@@ -281,22 +366,11 @@ function toggleModal() {
   const galleryClone = galleryContent.cloneNode(true);
   galleryClone.classList.add("modal-gallery");
 
-  // Supprime le texte (figcaption) de chaque figure dans la galerie clonée
-  const figures = galleryClone.querySelectorAll("figure");
-  figures.forEach(figure => {
-    figure.removeChild(figure.querySelector("figcaption"));
-
-     // Crée l'icône cliquable et l'ajoute à la figure
-     const trashIcon = document.createElement("i");
-     trashIcon.className = "fa-regular fa-trash-can";
-     trashIcon.style.color = "#000000";
-     trashIcon.addEventListener("click", handleTrashIconClick); 
-
-     figure.appendChild(trashIcon);
-  });
-
   modalContent.appendChild(galleryClone);
   
+  // Appelle la fonction pour créer les icônes de corbeille
+  createTrashIcons(galleryClone.querySelectorAll("figure"));
+
     // Ajoute le bouton "Ajouter une photo" à la modale
     const addButton = document.createElement("button");
     addButton.id = "boutonAjoutdePhoto";
@@ -321,51 +395,6 @@ function toggleModal() {
   
     modal.appendChild(closeModalButton);
    
-   // Gestionnaire d'événements pour l'icône de la corbeille
-   function handleTrashIconClick(event) {
-    const figureElement = event.target.closest("figure"); // Trouve l'élément figure parent
-    if (!figureElement) {
-      console.error("Figure element not found.");
-      return;
-    }
-  
-    const imageId = figureElement.dataset.id; // Récupère l'ID de l'image depuis l'attribut data-id
-    if (!imageId) {
-      console.error("Image ID not found.");
-      return;
-    }
-  
-    // Effectuez la demande de suppression à l'API en utilisant imageId
-    deleteImage(imageId);
-  
-    // Retirez l'élément figure de la galerie côté client
-    figureElement.remove();
-  }
-  
-  async function deleteImage(imageId) {
-    const apiUrl = `http://localhost:5678/api/works/${imageId}`;
-    try {
-      const response = await fetch(apiUrl, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/json",
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      console.log("Réponse de l'API (Suppression) :", response.statusText);
-  
-      // Mettez à jour la galerie côté client après la suppression
-      updateGallery();
-    } catch (error) {
-      console.error("Erreur lors de la demande DELETE :", error);
-    }
-  }
-
     // Ajout des gestionnaires d'événements de la nouvelle modal
     const newModalTrigger = document.getElementById("boutonAjoutdePhoto");
     const closeNewModalButton = document.querySelector(".close-new-modal");
@@ -384,28 +413,7 @@ function toggleModal() {
         const newModalContainer = document.querySelector(".new-modal-container");
         newModalContainer.classList.toggle("active");
     }
-    async function updateGallery() {
-      const apiUrl = "http://localhost:5678/api/works";
-      try {
-        const response = await fetch(apiUrl);
     
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
-    
-          // Appel de la fonction pour afficher dynamiquement les travaux
-          displayGalleryItems(data);
-    
-          // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
-          window.allWorks = data;
-        } else {
-          console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
-        }
-      } catch (error) {
-        console.error("Une erreur s'est produite lors de la requête :", error);
-      }
-    }
-
 // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 async function handleAddPhotoButtonClick() {
  
@@ -536,13 +544,31 @@ async function handleAddPhotoButtonClick() {
     const galleryContainer = document.getElementById("gallery");
     console.log("Container de la galerie principale : ", galleryContainer);
   
-    const newPhotoElement = document.createElement("img");
-    newPhotoElement.src = newPhotoData.imageUrl;
-    newPhotoElement.alt = newPhotoData.title;
-    
-    console.log("Nouvel élément image : ", newPhotoElement);
+    const newFigureElement = document.createElement("figure");
+    const newImgElement = document.createElement("img");
+    newImgElement.src = newPhotoData.imageUrl;
+    newImgElement.alt = newPhotoData.title;
   
-    galleryContainer.appendChild(newPhotoElement);
+    const newFigcaptionElement = document.createElement("figcaption");
+    newFigcaptionElement.textContent = newPhotoData.title;
+  
+    const newTrashIcon = document.createElement("i");
+    newTrashIcon.className = "fa-regular fa-trash-can";
+    newTrashIcon.style.color = "#000000";
+    newTrashIcon.addEventListener("click", handleTrashIconClick);
+  
+    const newIconContainer = document.createElement("div");
+    newIconContainer.className = "icon-container";
+    newIconContainer.appendChild(newTrashIcon);
+  
+    newFigureElement.appendChild(newImgElement);
+    newFigureElement.appendChild(newFigcaptionElement);
+    newFigureElement.appendChild(newIconContainer);
+  
+    galleryContainer.appendChild(newFigureElement);
+  
+    // Mise à jour de l'écouteur d'événements pour l'icône de la corbeille nouvellement ajoutée
+    newTrashIcon.addEventListener("click", handleTrashIconClick);
   
     console.log("Mise à jour de la liste existante de photos");
     updateGallery();
