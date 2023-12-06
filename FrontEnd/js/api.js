@@ -1,4 +1,3 @@
-// Déclaration de la fonction pour afficher dynamiquement les travaux
 function displayGalleryItems(data) {
   const galleryDiv = document.getElementById("gallery");
 
@@ -8,6 +7,8 @@ function displayGalleryItems(data) {
 
     data.forEach(item => {
       const figureElement = document.createElement("figure");
+      figureElement.dataset.id = item.id; // Ajoute un attribut data-id avec l'ID de l'image
+
       const imgElement = document.createElement("img");
       imgElement.src = item.imageUrl;
       imgElement.alt = item.title;
@@ -289,7 +290,7 @@ function toggleModal() {
      const trashIcon = document.createElement("i");
      trashIcon.className = "fa-regular fa-trash-can";
      trashIcon.style.color = "#000000";
-     trashIcon.addEventListener("click", handleTrashIconClick); // Ajoutez votre gestionnaire d'événements ici
+     trashIcon.addEventListener("click", handleTrashIconClick); 
 
      figure.appendChild(trashIcon);
   });
@@ -320,10 +321,50 @@ function toggleModal() {
   
     modal.appendChild(closeModalButton);
    
-    // Gestionnaire d'événements pour l'icône de la corbeille
-function handleTrashIconClick() {
-  console.log("Trash Icon Clicked");
-}
+   // Gestionnaire d'événements pour l'icône de la corbeille
+   function handleTrashIconClick(event) {
+    const figureElement = event.target.closest("figure"); // Trouve l'élément figure parent
+    if (!figureElement) {
+      console.error("Figure element not found.");
+      return;
+    }
+  
+    const imageId = figureElement.dataset.id; // Récupère l'ID de l'image depuis l'attribut data-id
+    if (!imageId) {
+      console.error("Image ID not found.");
+      return;
+    }
+  
+    // Effectuez la demande de suppression à l'API en utilisant imageId
+    deleteImage(imageId);
+  
+    // Retirez l'élément figure de la galerie côté client
+    figureElement.remove();
+  }
+  
+  async function deleteImage(imageId) {
+    const apiUrl = `http://localhost:5678/api/works/${imageId}`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      console.log("Réponse de l'API (Suppression) :", response.statusText);
+  
+      // Mettez à jour la galerie côté client après la suppression
+      updateGallery();
+    } catch (error) {
+      console.error("Erreur lors de la demande DELETE :", error);
+    }
+  }
 
     // Ajout des gestionnaires d'événements de la nouvelle modal
     const newModalTrigger = document.getElementById("boutonAjoutdePhoto");
