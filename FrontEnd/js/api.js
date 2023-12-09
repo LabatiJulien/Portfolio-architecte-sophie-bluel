@@ -348,10 +348,12 @@ function createTrashIcons(figures) {
   });
 }  
 
+const modal = document.querySelector(".modal");
+
   function displayGalleryContent() {
     console.log("Display Gallery Content Clicked");
+    
     // Efface le contenu existant de la modale
-    const modal = document.querySelector(".modal");
     modal.innerHTML = "";
   
     // Crée un conteneur pour le contenu de la modale
