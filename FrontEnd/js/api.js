@@ -430,12 +430,18 @@ async function handleAddPhotoButtonClick() {
   const newModalContent = document.createElement("div");
   newModalContent.className = "new-modal";
   newModalContent.innerHTML = `
-    <h1>Ajout Photo</h1>
-
-    <!-- Formulaire pour ajouter une photo -->
-    <div>
-      <form id="addPhotoForm">
-
+  
+  <div id="container">
+  <i class="fa-solid fa-arrow-left" id="back-icon"></i>
+  <i class="fa-solid fa-xmark" id="close-icon"></i>
+  <h2>Ajout de photo</h2>
+      
+  <form id="addPhotoForm">
+  
+  <div id="fileSectionContainer">
+  <div id="preview">
+      <i class="fa-regular fa-image"></i>
+  </div>
         <input type="file" id="photoFile" name="photoFile" accept="image/*" required onchange="previewImage(event)">
 
         <!-- Aperçu de la photo sélectionnée -->
