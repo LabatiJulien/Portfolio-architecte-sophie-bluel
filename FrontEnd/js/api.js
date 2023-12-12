@@ -433,20 +433,23 @@ async function handleAddPhotoButtonClick() {
   
   <div id="container">
   <i class="fa-solid fa-arrow-left" id="back-icon"></i>
-  <i class="fa-solid fa-xmark" id="close-icon"></i>
   <h2>Ajout de photo</h2>
       
   <form id="addPhotoForm">
   
   <div id="fileSectionContainer">
   <div id="preview">
-      <i class="fa-regular fa-image"></i>
-  </div>
-        <input type="file" id="photoFile" name="photoFile" accept="image/*" required onchange="previewImage(event)">
+  <i class="fa-regular fa-image" id="defaultImage"></i>
+</div>
 
-        <!-- Aperçu de la photo sélectionnée -->
+        
+        <label for="fileInput" id="customFileLabel">+ Ajouter une photo</label>
+            <input type="file" id="fileInput" accept="image/jpeg, image/png" onchange="previewImage(event)" required>
+            
+            <!-- Aperçu de la photo sélectionnée -->
         <img id="photoPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
-
+        <div id="fileInfo">Formats autorisés : JPG, PNG | Taille maximale : 4 Mo</div>
+        
         <h2>Titre de la photo:</h2>
         <input type="text" id="photoTitle" name="photoTitle" required>
 
@@ -468,32 +471,42 @@ async function handleAddPhotoButtonClick() {
   // Ajoutez le contenu de la nouvelle modale au conteneur
   newModalContainer.appendChild(newModalContent);
 
-  // Créez un élément script pour le code JavaScript
   const scriptElement = document.createElement("script");
-  scriptElement.text = `
-    function previewImage(event) {
-      var input = event.target;
-      var preview = document.getElementById('photoPreview');
-      var file = input.files[0];
+scriptElement.text = `
+  function previewImage(event) {
+    var input = event.target;
+    var preview = document.getElementById('photoPreview');
+    var fileInput = document.getElementById('fileInput');
+    var defaultImage = document.getElementById('defaultImage');
+    var customFileLabel = document.getElementById('customFileLabel');
 
-      if (file) {
-         var reader = new FileReader();
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
 
-         reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-         }
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        defaultImage.style.display = 'none';
+        customFileLabel.style.display = 'none';
+      };
 
-         reader.readAsDataURL(file);
-      } else {
-         preview.src = '';
-         preview.style.display = 'none';
-      }
+      reader.readAsDataURL(input.files[0]);
+
+      // Désactiver l'élément fileInput après la sélection d'une image
+      fileInput.disabled = true;
+    } else {
+      preview.src = '';
+      preview.style.display = 'none';
+      defaultImage.style.display = 'block';
+      customFileLabel.style.display = 'block';
+
+      // Activer l'élément fileInput si aucune image n'est sélectionnée
+      fileInput.disabled = false;
     }
-  `;
-
-  // Ajoutez le script au document
-  document.body.appendChild(scriptElement);
+  }
+`;
+document.head.appendChild(scriptElement);
+  
 
   // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
   const closeNewModalButton = newModalContent.querySelector(".close-new-modal");
@@ -515,7 +528,7 @@ async function handleAddPhotoButtonClick() {
       event.preventDefault();
 
       const formData = new FormData();
-      formData.append("image", document.getElementById("photoFile").files[0]);
+      formData.append("image", document.getElementById("fileInput").files[0]);
       formData.append("title", document.getElementById("photoTitle").value);
       formData.append("category", document.getElementById("category").value);
 
