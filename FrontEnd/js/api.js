@@ -449,7 +449,7 @@ async function handleAddPhotoButtonClick() {
             <!-- Aperçu de la photo sélectionnée -->
         <img id="photoPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
         <div id="fileInfo">Formats autorisés : JPG, PNG | Taille maximale : 4 Mo</div>
-        
+        </div>
         <h2>Titre de la photo:</h2>
         <input type="text" id="photoTitle" name="photoTitle" required>
 
@@ -488,6 +488,10 @@ scriptElement.text = `
         preview.style.display = 'block';
         defaultImage.style.display = 'none';
         customFileLabel.style.display = 'none';
+
+        // Ajouter des styles pour centrer l'image de preview
+        preview.style.margin = 'auto';
+        preview.style.display = 'block';
       };
 
       reader.readAsDataURL(input.files[0]);
@@ -500,12 +504,13 @@ scriptElement.text = `
       defaultImage.style.display = 'block';
       customFileLabel.style.display = 'block';
 
-      // Activer l'élément fileInput si aucune image n'est sélectionnée
+      // Activer l'élément fileInput si aucune image est sélectionnée
       fileInput.disabled = false;
     }
   }
 `;
 document.head.appendChild(scriptElement);
+
   
 
   // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
