@@ -432,7 +432,7 @@ async function handleAddPhotoButtonClick() {
   newModalContent.innerHTML = `
   
   <div id="container">
-  <i class="fa-solid fa-arrow-left" id="back-icon"></i>
+  <i class="fa-solid fa-arrow-left" id="backButton"></i>
   <h2>Ajout de photo</h2>
       
   <form id="addPhotoForm">
@@ -460,7 +460,7 @@ async function handleAddPhotoButtonClick() {
           <option value="2">Appartements</option>
           <option value="3">Hotels & restaurants</option>
         </select>
-
+        <hr>
         <button class="new-modal-button" type="submit">Valider</button>
       </form>
     </div>
@@ -521,6 +521,19 @@ document.head.appendChild(scriptElement);
       // Fermez la nouvelle modale en supprimant le conteneur
       newModalContainer.remove();
     });
+
+    // Ajoutez un gestionnaire d'événements à l'icône de flèche gauche
+const backButton = newModalContent.querySelector("#backButton");
+if (backButton) {
+  backButton.addEventListener("click", function () {
+    // Logique à exécuter lorsque le bouton de retour est cliqué
+    console.log("Bouton de retour cliqué !");
+    
+    // Fermez la nouvelle modale en supprimant le conteneur
+    newModalContainer.remove();
+  });
+}
+
   }
 
   // Ajoutez une classe pour afficher la nouvelle modale
