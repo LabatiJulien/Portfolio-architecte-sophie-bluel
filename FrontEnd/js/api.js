@@ -262,6 +262,42 @@ function toggleModal() {
   }
 }
 
+function updatePhotoList(newPhotoData) {
+  console.log("Ajout à la galerie principale : ", newPhotoData.imageUrl);
+
+  const galleryContainer = document.getElementById("gallery");
+  console.log("Container de la galerie principale : ", galleryContainer);
+
+  const newFigureElement = document.createElement("figure");
+  const newImgElement = document.createElement("img");
+  newImgElement.src = newPhotoData.imageUrl;
+  newImgElement.alt = newPhotoData.title;
+
+  const newFigcaptionElement = document.createElement("figcaption");
+  newFigcaptionElement.textContent = newPhotoData.title;
+
+  const newTrashIcon = document.createElement("i");
+  newTrashIcon.className = "fa-regular fa-trash-can";
+  newTrashIcon.style.color = "#000000";
+  newTrashIcon.addEventListener("click", handleTrashIconClick);
+
+  const newIconContainer = document.createElement("div");
+  newIconContainer.className = "icon-container";
+  newIconContainer.appendChild(newTrashIcon);
+
+  newFigureElement.appendChild(newImgElement);
+  newFigureElement.appendChild(newFigcaptionElement);
+  newFigureElement.appendChild(newIconContainer);
+
+  galleryContainer.appendChild(newFigureElement);
+
+  // Mise à jour de l'écouteur d'événements pour l'icône de la corbeille nouvellement ajoutée
+  newTrashIcon.addEventListener("click", handleTrashIconClick);
+
+  console.log("Mise à jour de la liste existante de photos");
+  updateGallery();
+}
+
 async function updateGallery() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
@@ -276,6 +312,9 @@ async function updateGallery() {
 
       // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
       window.allWorks = data;
+
+      // Forcer le rafraîchissement de la page
+      location.reload(true);
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
     }
@@ -283,6 +322,10 @@ async function updateGallery() {
     console.error("Une erreur s'est produite lors de la requête :", error);
   }
 }
+
+
+
+
 
 
 // Gestionnaire d'événements pour l'icône de la corbeille
@@ -577,43 +620,6 @@ if (backButton) {
     });
   }
   
-  function updatePhotoList(newPhotoData) {
-    console.log("Ajout à la galerie principale : ", newPhotoData.imageUrl);
-  
-    const galleryContainer = document.getElementById("gallery");
-    console.log("Container de la galerie principale : ", galleryContainer);
-  
-    const newFigureElement = document.createElement("figure");
-    const newImgElement = document.createElement("img");
-    newImgElement.src = newPhotoData.imageUrl;
-    newImgElement.alt = newPhotoData.title;
-  
-    const newFigcaptionElement = document.createElement("figcaption");
-    newFigcaptionElement.textContent = newPhotoData.title;
-  
-    const newTrashIcon = document.createElement("i");
-    newTrashIcon.className = "fa-regular fa-trash-can";
-    newTrashIcon.style.color = "#000000";
-    newTrashIcon.addEventListener("click", handleTrashIconClick);
-  
-    const newIconContainer = document.createElement("div");
-    newIconContainer.className = "icon-container";
-    newIconContainer.appendChild(newTrashIcon);
-  
-    newFigureElement.appendChild(newImgElement);
-    newFigureElement.appendChild(newFigcaptionElement);
-    newFigureElement.appendChild(newIconContainer);
-  
-    galleryContainer.appendChild(newFigureElement);
-  
-    // Mise à jour de l'écouteur d'événements pour l'icône de la corbeille nouvellement ajoutée
-    newTrashIcon.addEventListener("click", handleTrashIconClick);
-  
-    console.log("Mise à jour de la liste existante de photos");
-    updateGallery();
-  }
-  
-
   // Ajoutez la nouvelle modale au document
   document.body.appendChild(newModalContainer);
 
