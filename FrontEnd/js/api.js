@@ -448,7 +448,7 @@ async function handleAddPhotoButtonClick() {
             
             <!-- Aperçu de la photo sélectionnée -->
         <img id="photoPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
-        <div id="fileInfo">Formats autorisés : JPG, PNG | Taille maximale : 4 Mo</div>
+        <div id="fileInfo">jpg, png : 4 Mo max</div>
         </div>
         <h2>Titre de la photo:</h2>
         <input type="text" id="photoTitle" name="photoTitle" required>
