@@ -372,22 +372,31 @@ try {
 }
 
   // Création des icônes de corbeille 
-function createTrashIcons(figures) {
-  figures.forEach(figure => {
-    figure.removeChild(figure.querySelector("figcaption"));
-
-    const trashIcon = document.createElement("i");
-    trashIcon.className = "fa-regular fa-trash-can";
-    trashIcon.style.color = "#000000";
-    trashIcon.addEventListener("click", handleTrashIconClick);
-
-    const iconContainer = document.createElement("div");
-    iconContainer.className = "icon-container";
-    iconContainer.appendChild(trashIcon);
-
-    figure.appendChild(iconContainer);
-  });
-}  
+  function createTrashIcons(figures) {
+    figures.forEach(figure => {
+      figure.removeChild(figure.querySelector("figcaption"));
+  
+      const trashIcon = document.createElement("i");
+      trashIcon.className = "fa-regular fa-trash-can";
+      trashIcon.addEventListener("click", handleTrashIconClick);
+  
+      const iconContainer = document.createElement("div");
+      iconContainer.className = "icon-container";
+      iconContainer.style.position = "absolute";
+      iconContainer.style.top = "10px";
+      iconContainer.style.right = "5px";
+      iconContainer.style.padding = "5px";
+      iconContainer.style.backgroundColor = "#000";  // Fond noir
+  
+      // Style pour l'icône blanche
+      trashIcon.style.color = "#fff"; 
+  
+      iconContainer.appendChild(trashIcon);
+  
+      figure.style.position = "relative";
+      figure.appendChild(iconContainer);
+    });
+  }
 
 const modal = document.querySelector(".modal");
 
