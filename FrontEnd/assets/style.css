@@ -432,7 +432,7 @@ text-align: center;
 	z-index: 1000;
 }
 
-#back-icon {
+#backButton {
     position: absolute;
     top: 10px;
     left: 13px; 
@@ -468,3 +468,29 @@ input[type="file"] {
     display: none; /* Cacher le champ de fichier */
 }
 
+.form-title {
+color: #000;
+font-family: Work Sans;
+font-size: 26px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+  }
+
+  .form-category {
+	color: #3D3D3D;
+font-family: Work Sans;
+font-size: 14px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+  }
+
+  #photoTitle,
+  #category {
+    width: 100%; 
+    padding: 8px; 
+    box-sizing: border-box;
+    text-align: left; 
+    margin-bottom: 10px;
+}

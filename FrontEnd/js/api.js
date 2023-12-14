@@ -313,8 +313,6 @@ async function updateGallery() {
       // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
       window.allWorks = data;
 
-      // Forcer le rafraîchissement de la page
-      location.reload(true);
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
     }
@@ -322,11 +320,6 @@ async function updateGallery() {
     console.error("Une erreur s'est produite lors de la requête :", error);
   }
 }
-
-
-
-
-
 
 // Gestionnaire d'événements pour l'icône de la corbeille
 function handleTrashIconClick(event) {
@@ -440,24 +433,6 @@ const modal = document.querySelector(".modal");
   
     modal.appendChild(closeModalButton);
    
-    // Ajout des gestionnaires d'événements de la nouvelle modal
-    const newModalTrigger = document.getElementById("boutonAjoutdePhoto");
-    const closeNewModalButton = document.querySelector(".close-new-modal");
-
-    if (newModalTrigger && closeNewModalButton) {
-        newModalTrigger.addEventListener("click", function () {
-            toggleNewModal();
-        });
-
-        closeNewModalButton.addEventListener("click", function () {
-            toggleNewModal();
-        });
-    }
-
-    function toggleNewModal() {
-        const newModalContainer = document.querySelector(".new-modal-container");
-        newModalContainer.classList.toggle("active");
-    }
     
 // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 async function handleAddPhotoButtonClick() {
@@ -465,18 +440,15 @@ async function handleAddPhotoButtonClick() {
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
-  // Créez la nouvelle modale container
-  const newModalContainer = document.createElement("div");
-  newModalContainer.className = "new-modal-container";
+  // Récupère le conteneur existant de la modale
+  const modalContent = modal.querySelector("div");
 
-  // Créez le contenu de la nouvelle modale
-  const newModalContent = document.createElement("div");
-  newModalContent.className = "new-modal";
-  newModalContent.innerHTML = `
+ // Remplace le contenu existant par celui de la nouvelle modale
+ modalContent.innerHTML = `
   
   <div id="container">
   <i class="fa-solid fa-arrow-left" id="backButton"></i>
-  <h2>Ajout de photo</h2>
+  <h2 class="form-title">Ajout de photo</h2>
       
   <form id="addPhotoForm">
   
@@ -493,10 +465,11 @@ async function handleAddPhotoButtonClick() {
         <img id="photoPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
         <div id="fileInfo">jpg, png : 4 Mo max</div>
         </div>
-        <h2>Titre de la photo:</h2>
+       
+        <h2 class="form-category">Titre de la photo:</h2>
         <input type="text" id="photoTitle" name="photoTitle" required>
 
-        <h2>Catégorie:</h2>
+        <h2 class="form-category">Catégorie:</h2>
         <select id="category" name="category" required>
           <option value=""></option>
           <option value="1">Objets</option>
@@ -510,9 +483,6 @@ async function handleAddPhotoButtonClick() {
     <!-- Bouton pour fermer la nouvelle modale -->
     <button class="close-new-modal">X</button>
   `;
-
-  // Ajoutez le contenu de la nouvelle modale au conteneur
-  newModalContainer.appendChild(newModalContent);
 
   const scriptElement = document.createElement("script");
 scriptElement.text = `
@@ -554,36 +524,29 @@ scriptElement.text = `
 `;
 document.head.appendChild(scriptElement);
 
-  
-
   // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
-  const closeNewModalButton = newModalContent.querySelector(".close-new-modal");
+  const closeNewModalButton = modalContent.querySelector(".close-new-modal");
   if (closeNewModalButton) {
     closeNewModalButton.addEventListener("click", function () {
       
-      // Fermez la nouvelle modale en supprimant le conteneur
-      newModalContainer.remove();
     });
 
-    // Ajoutez un gestionnaire d'événements à l'icône de flèche gauche
-const backButton = newModalContent.querySelector("#backButton");
+   // Ajoutez un gestionnaire d'événements à l'icône de flèche gauche
+const backButton = modalContent.querySelector("#backButton");
 if (backButton) {
   backButton.addEventListener("click", function () {
     // Logique à exécuter lorsque le bouton de retour est cliqué
     console.log("Bouton de retour cliqué !");
     
-    // Fermez la nouvelle modale en supprimant le conteneur
-    newModalContainer.remove();
+    // Affichez à nouveau la modale mise à jour dynamiquement
+    displayGalleryContent();
   });
 }
 
   }
 
-  // Ajoutez une classe pour afficher la nouvelle modale
-  newModalContainer.classList.add("active");
-
   // Ajoutez un gestionnaire d'événements au formulaire
-  const addPhotoForm = newModalContent.querySelector("#addPhotoForm");
+  const addPhotoForm = modalContent.querySelector("#addPhotoForm");
   if (addPhotoForm) {
     addPhotoForm.addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -614,14 +577,9 @@ if (backButton) {
         updatePhotoList(data);
       } catch (error) {
         console.error("Erreur lors de la demande POST :", error);
-      } finally {
-        newModalContainer.remove();
       }
     });
   }
-  
-  // Ajoutez la nouvelle modale au document
-  document.body.appendChild(newModalContainer);
 
 }
 
