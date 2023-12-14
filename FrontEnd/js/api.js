@@ -313,6 +313,11 @@ async function updateGallery() {
       // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
       window.allWorks = data;
 
+      // Si la modale est ouverte, mettez à jour la galerie dans la modale également
+      if (modal.classList.contains("active")) {
+        const modalGallery = modal.querySelector(".modal-gallery");
+        createTrashIcons(modalGallery.querySelectorAll("figure"));
+      }
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
     }
