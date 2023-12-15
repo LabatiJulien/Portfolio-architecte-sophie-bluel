@@ -279,8 +279,7 @@ function updatePhotoList(newPhotoData) {
   const newTrashIcon = document.createElement("i");
   newTrashIcon.className = "fa-regular fa-trash-can";
   newTrashIcon.style.color = "#000000";
-  newTrashIcon.addEventListener("click", handleTrashIconClick);
-
+ 
   const newIconContainer = document.createElement("div");
   newIconContainer.className = "icon-container";
   newIconContainer.appendChild(newTrashIcon);
