@@ -340,34 +340,37 @@ function handleTrashIconClick(event) {
   }
 
   // Effectuez la demande de suppression à l'API en utilisant imageId
-  deleteImage(imageId);
-
-  // Retirez l'élément figure de la galerie côté client
-  figureElement.remove();
+  deleteImage(imageId)
+    .then(() => {
+      // Retirez l'élément figure de la galerie côté client après la suppression côté serveur
+      figureElement.remove();
+    })
+    .catch(error => {
+      console.error("Error deleting image:", error);
+    });
 }
 
 async function deleteImage(imageId) {
-const apiUrl = `http://localhost:5678/api/works/${imageId}`;
-try {
-  const response = await fetch(apiUrl, {
-    method: "DELETE",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Accept": "application/json",
-    },
-  });
+  const apiUrl = `http://localhost:5678/api/works/${imageId}`;
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/json",
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    console.log("Réponse de l'API (Suppression) :", response.statusText);
+  } catch (error) {
+    console.error("Erreur lors de la demande DELETE :", error);
+    throw error; // Renvoie l'erreur pour la gestion dans la fonction appelante
   }
-
-  console.log("Réponse de l'API (Suppression) :", response.statusText);
-
-  // Mettez à jour la galerie côté client après la suppression
-  updateGallery();
-} catch (error) {
-  console.error("Erreur lors de la demande DELETE :", error);
-}
 }
 
   // Création des icônes de corbeille 
