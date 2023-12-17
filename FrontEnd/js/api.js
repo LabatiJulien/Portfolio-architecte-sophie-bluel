@@ -62,13 +62,13 @@ overlay.addEventListener("click", overlayClickHandler);
       });
 
       // Ajout des gestionnaires d'événements de la modal
-      modalTriggers.forEach(trigger => {
-        trigger.addEventListener("click", function () {
-          console.log("Modal Trigger Clicked");
-          toggleModal();
-          displayGalleryContent();
-        });
-      });
+modalTriggers.forEach(trigger => {
+  trigger.addEventListener("click", function () {
+    console.log("Modal Trigger Clicked");
+    toggleModal();
+    displayGalleryContent(modal); // Passez la variable modal ici
+  });
+});
 
       const closeModalButton = document.querySelector(".close-modal");
       if (closeModalButton) {
@@ -80,54 +80,56 @@ overlay.addEventListener("click", overlayClickHandler);
 
 const modal = document.querySelector(".modal");
 
-  function displayGalleryContent() {
-    console.log("Display Gallery Content Clicked");
-    
-    // Efface le contenu existant de la modale
-    modal.innerHTML = "";
-  
-    // Crée un conteneur pour le contenu de la modale
-    const modalContent = document.createElement("div");
-  
-    // Ajoute le titre h1 à la modale
-    const title = document.createElement("h1");
-    title.textContent = "Galerie photo";
-    modalContent.appendChild(title);
-  
+ // Fonction pour afficher dynamiquement le contenu de la galerie dans la modal
+function displayGalleryContent(modal) {
+  console.log("Display Gallery Content Clicked");
+
+  // Efface le contenu existant de la modale
+  modal.innerHTML = "";
+
+  // Crée un conteneur pour le contenu de la modale
+  const modalContent = document.createElement("div");
+
+  // Ajoute le titre h1 à la modale
+  const title = document.createElement("h1");
+  title.textContent = "Galerie photo";
+  modalContent.appendChild(title);
+
   // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
   const galleryClone = galleryContent.cloneNode(true);
   galleryClone.classList.add("modal-gallery");
 
   modalContent.appendChild(galleryClone);
-  
+
   // Appelle la fonction pour créer les icônes de corbeille
   createTrashIcons(galleryClone.querySelectorAll("figure"));
 
-    // Ajoute le bouton "Ajouter une photo" à la modale
-    const addButton = document.createElement("button");
-    addButton.id = "boutonAjoutdePhoto";
-    addButton.className = "modal-button";
-    addButton.textContent = "Ajouter une photo";
-    modalContent.appendChild(addButton);
-  
-    // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
-  addButton.addEventListener("click", handleAddPhotoButtonClick);
-    
+  // Ajoute le bouton "Ajouter une photo" à la modale
+  const addButton = document.createElement("button");
+  addButton.id = "boutonAjoutdePhoto";
+  addButton.className = "modal-button";
+  addButton.textContent = "Ajouter une photo";
+  modalContent.appendChild(addButton);
+
+  // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
+  addButton.addEventListener("click", function () {
+    handleAddPhotoButtonClick(modal); // Passez la variable modal ici également
+  });
+
   // Ajoute le conteneur de la modale à la modale
-    modal.appendChild(modalContent);
-  
-    // Ajoute un gestionnaire d'événements pour fermer la modale
-    const closeModalButton = document.createElement("button");
-    closeModalButton.className = "close-modal modal-trigger";
-    closeModalButton.textContent = "X";
-    closeModalButton.addEventListener("click", function () {
-      console.log("Close Modal Clicked");
-      toggleModal();
-    });
-  
-    modal.appendChild(closeModalButton);
-   
-  }
+  modal.appendChild(modalContent);
+
+  // Ajoute un gestionnaire d'événements pour fermer la modale
+  const closeModalButton = document.createElement("button");
+  closeModalButton.className = "close-modal modal-trigger";
+  closeModalButton.textContent = "X";
+  closeModalButton.addEventListener("click", function () {
+    console.log("Close Modal Clicked");
+    toggleModal();
+  });
+
+  modal.appendChild(closeModalButton);
+}
   
       if (token) {
         // Utilisateur connecté
@@ -223,9 +225,7 @@ function updatePhotoList(newPhotoData) {
   updateGallery();
 }
 
-// Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
-async function handleAddPhotoButtonClick() {
- 
+async function handleAddPhotoButtonClick(modal) {
   // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
@@ -416,7 +416,7 @@ function filterByCategory(categoryId) {
   displayGalleryItems(filteredWorks);
 }
 
-// Fonction asynchrone pour récupérer les données de l'API
+// Dans la fonction fetchData
 async function fetchData() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
@@ -435,6 +435,9 @@ async function fetchData() {
 
       // Stocke les données pour les utiliser lors du filtrage
       window.allWorks = data;
+
+      // Ajoutez cette console.log pour vérifier que les données sont mises à jour
+      console.log("Données mises à jour :", window.allWorks);
 
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
