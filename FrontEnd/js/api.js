@@ -1,175 +1,5 @@
 let data
 
-function displayGalleryItems(data) {
-  console.log("Displaying gallery items with data:", data);
-  const galleryDiv = document.getElementById("gallery");
-
-  // Vérifie si l'élément "gallery" existe sur la page
-  if (galleryDiv) {
-    galleryDiv.innerHTML = "";
-
-    data.forEach(item => {
-      const figureElement = document.createElement("figure");
-      figureElement.dataset.id = item.id; // Ajoute un attribut data-id avec l'ID de l'image
-
-      const imgElement = document.createElement("img");
-      imgElement.src = item.imageUrl;
-      imgElement.alt = item.title;
-
-      const figcaptionElement = document.createElement("figcaption");
-      figcaptionElement.textContent = item.title;
-
-      figureElement.appendChild(imgElement);
-      figureElement.appendChild(figcaptionElement);
-
-      galleryDiv.appendChild(figureElement);
-    });
-  }
-}
-
-
-
-// Déclaration de la fonction pour filtrer les travaux par catégorie
-function filterByCategory(categoryId) {
- 
-  // Récupère tous les travaux depuis la variable globale
-  let allWorks = window.allWorks || [];
-
-  // Filtrer les travaux en fonction de la catégorie
-  const filteredWorks = (categoryId === 'all') ?
-    allWorks :
-    allWorks.filter(work => work.categoryId === categoryId);
-
-  // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
-  displayGalleryItems(filteredWorks);
-}
-
-// Fonction asynchrone pour récupérer les données de l'API
-async function fetchData() {
-  const apiUrl = "http://localhost:5678/api/works";
-  try {
-    const response = await fetch(apiUrl);
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log("La requête vers l'API a réussi. Statut :", response.status);
-      console.log("Données récupérées de l'API :", data);
-
-      // Supprimer l'image si elle a été marquée pour suppression
-      if (window.imageToDelete) {
-        await deleteImage(window.imageToDelete);
-        window.imageToDelete = null; // Réinitialiser la variable après la suppression
-      }
-
-      // Stocke les données pour les utiliser lors du filtrage
-      window.allWorks = data;
-
-      // Appel de la fonction pour afficher dynamiquement les travaux
-      displayGalleryItems(data);
-
-      // Mise à jour de l'affichage du bouton Login/Logout
-      updateLoginLogoutButton();
-    } else {
-      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
-    }
-  } catch (error) {
-    console.error("Une erreur s'est produite lors de la requête :", error);
-  }
-}
-
-function toggleEditModeBanner(isEditMode) {
-  const header = document.querySelector("header");
-
-  // Vérifie si l'élément du header existe
-  if (header) {
-   
-    // Vérifie si le mode édition est activé
-    if (isEditMode) {
-     
-      // Crée la bande noire avec le texte "Mode édition"
-      const editModeBanner = document.createElement("div");
-      editModeBanner.className = "edit-mode-banner";
-
-      // Crée l'icône Font Awesome
-      const iconElement = document.createElement("i");
-      iconElement.classList.add("fa-regular", "fa-pen-to-square", "fa-xs");
-
-      // Ajoute l'icône à la bannière
-      editModeBanner.appendChild(iconElement);
-
-      // Crée l'élément pour le texte "Mode édition"
-      const textElement = document.createElement("span");
-      textElement.textContent = " Mode édition";
-
-      // Ajoute le texte à la bannière
-      editModeBanner.appendChild(textElement);
-
-      // Ajoute la bande noire au-dessus du header
-      header.parentNode.insertBefore(editModeBanner, header);
-
-      // Ajoute une classe au header pour ajuster la position
-      header.classList.add("header-with-banner");
-    } else {
-      
-      // Supprime la bande noire et la classe du header
-      const editModeBanner = document.querySelector(".edit-mode-banner");
-      if (editModeBanner) {
-        editModeBanner.remove();
-      }
-
-      header.classList.remove("header-with-banner");
-    }
-  }
-}
-
-// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
-function isLoggedIn() {
-  const token = localStorage.getItem('token');
-  return !!token; 
-}
-
-// Fonction pour mettre à jour la visibilité des filtres en fonction de la connexion
-function updateFilterVisibility() {
-  const filtersContainer = document.getElementById("categoryButtons");
-  if (filtersContainer) {
-    
-    filtersContainer.classList.toggle("hidden", isLoggedIn());
-  }
-}
-
-function updateLoginLogoutButton() {
-  const token = localStorage.getItem('token');
-  const loginLink = document.querySelector("nav li a[href='login/login.html']");
-  const logoutButton = document.getElementById("logoutButton");
-  const filtersContainer = document.getElementById("categoryButtons"); 
-
-  if (token) {
-   
-    // Utilisateur connecté
-    // Remplace le lien "Login" par le bouton "Logout"
-    if (loginLink && logoutButton) {
-      loginLink.replaceWith(logoutButton);
-    }
-   
-    // Mise à jour de la visibilité des filtres
-    updateFilterVisibility();
-
-    toggleEditModeBanner(true);
-  } else {
-   
-    // Utilisateur non connecté
-    // Remplace le bouton "Logout" par le lien "Login"
-    if (logoutButton && loginLink) {
-      logoutButton.replaceWith(loginLink);
-    }
-
-    // Mise à jour de la visibilité des filtres
-    updateFilterVisibility();
-
-    toggleEditModeBanner(false);
-  }
-}
-
 document.addEventListener("DOMContentLoaded", async function () {
   console.log("DOM Content Loaded. Calling fetchData...");
 
@@ -248,8 +78,93 @@ overlay.addEventListener("click", overlayClickHandler);
         });
       }
 
-    // Déclaration de la fonction pour gérer le clic sur l'overlay
-function overlayClickHandler(event) {
+const modal = document.querySelector(".modal");
+
+  function displayGalleryContent() {
+    console.log("Display Gallery Content Clicked");
+    
+    // Efface le contenu existant de la modale
+    modal.innerHTML = "";
+  
+    // Crée un conteneur pour le contenu de la modale
+    const modalContent = document.createElement("div");
+  
+    // Ajoute le titre h1 à la modale
+    const title = document.createElement("h1");
+    title.textContent = "Galerie photo";
+    modalContent.appendChild(title);
+  
+  // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
+  const galleryClone = galleryContent.cloneNode(true);
+  galleryClone.classList.add("modal-gallery");
+
+  modalContent.appendChild(galleryClone);
+  
+  // Appelle la fonction pour créer les icônes de corbeille
+  createTrashIcons(galleryClone.querySelectorAll("figure"));
+
+    // Ajoute le bouton "Ajouter une photo" à la modale
+    const addButton = document.createElement("button");
+    addButton.id = "boutonAjoutdePhoto";
+    addButton.className = "modal-button";
+    addButton.textContent = "Ajouter une photo";
+    modalContent.appendChild(addButton);
+  
+    // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
+  addButton.addEventListener("click", handleAddPhotoButtonClick);
+    
+  // Ajoute le conteneur de la modale à la modale
+    modal.appendChild(modalContent);
+  
+    // Ajoute un gestionnaire d'événements pour fermer la modale
+    const closeModalButton = document.createElement("button");
+    closeModalButton.className = "close-modal modal-trigger";
+    closeModalButton.textContent = "X";
+    closeModalButton.addEventListener("click", function () {
+      console.log("Close Modal Clicked");
+      toggleModal();
+    });
+  
+    modal.appendChild(closeModalButton);
+   
+  }
+  
+      if (token) {
+        // Utilisateur connecté
+        fetchData();
+
+        // Ajoutez dynamiquement un bouton de déconnexion
+        const logoutButton = document.createElement("button");
+        logoutButton.id = "logoutButton";
+        logoutButton.textContent = "Logout";
+        logoutButton.addEventListener("click", function () {
+         
+          // Déconnectez l'utilisateur en supprimant le token
+          localStorage.removeItem('token');
+         
+          // Redirigez l'utilisateur vers la page de connexion
+          window.location.href = "/login/login.html";
+        });
+
+        // Ajoutez le bouton à un élément existant sur la page (par exemple, le header)
+        const header = document.querySelector("header");
+        if (header) {
+          header.appendChild(logoutButton);
+        }
+      } else {
+        // Utilisateur non connecté
+        
+        console.log("L'utilisateur n'est pas connecté.");
+
+        // Appel de la fonction pour afficher dynamiquement les travaux même pour les utilisateurs non connectés
+        fetchData();
+      }
+    }
+  }
+});
+
+ // Déclaration de la fonction pour gérer le clic sur l'overlay
+ function overlayClickHandler(event) {
   console.log("Overlay Clicked");
   if (event.target.classList.contains('overlay')) {
     toggleModal();
@@ -308,204 +223,6 @@ function updatePhotoList(newPhotoData) {
   updateGallery();
 }
 
-// Fonction pour mettre à jour la galerie principale
-async function updateGallery() {
-  const apiUrl = "http://localhost:5678/api/works";
-  try {
-    // Supprimer l'image si elle a été marquée pour suppression
-    if (window.imageToDelete) {
-      await deleteImage(window.imageToDelete);
-      window.imageToDelete = null; // Réinitialiser la variable après la suppression
-    }
-
-    const response = await fetch(apiUrl);
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
-
-      // Appel de la fonction pour afficher dynamiquement les travaux
-      displayGalleryItems(data);
-
-      // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
-      window.allWorks = data;
-
-      console.log("Galerie mise à jour avec succès !");
-    } else {
-      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
-    }
-  } catch (error) {
-    console.error("Une erreur s'est produite lors de la requête :", error);
-  }
-}
-
-
-// Gestionnaire d'événements pour l'icône de la corbeille
-async function handleTrashIconClick(event) {
-  const figureElement = event.target.closest("figure");
-  if (!figureElement) {
-    console.error("Élément figure introuvable.");
-    return;
-  }
-
-  const imageId = figureElement.dataset.id;
-  if (!imageId) {
-    console.error("ID de l'image introuvable.");
-    return;
-  }
-
-  // Effectuer la demande de suppression à l'API en utilisant imageId
-  try {
-    const apiUrl = `http://localhost:5678/api/works/${imageId}`;
-    const token = localStorage.getItem('token');
-    const response = await fetch(apiUrl, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP ! Statut : ${response.status}`);
-    }
-
-    console.log("Réponse de l'API (Suppression) :", response.statusText);
-
-    // Si la suppression côté serveur réussit, mettez à jour le tableau allWorks localement
-    const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
-    if (indexOfDeleted !== -1) {
-      window.allWorks.splice(indexOfDeleted, 1);
-    }
-
-    // Mettre également à jour la variable globale data
-    data = window.allWorks;
-
-    // Mettre à jour l'affichage
-    displayGalleryItems(window.allWorks);
-    updateGallery();
-
-  } catch (error) {
-    console.error("Erreur lors de la demande DELETE :", error);
-    throw error;
-  }
-}
-
-
-
-async function deleteImage(imageId) {
-  const apiUrl = `http://localhost:5678/api/works/${imageId}`;
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(apiUrl, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    console.log("Réponse de l'API (Suppression) :", response.statusText);
-
-    // Si la suppression côté serveur est réussie, mettez à jour le tableau allWorks localement
-    const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
-    if (indexOfDeleted !== -1) {
-      window.allWorks.splice(indexOfDeleted, 1);
-    }
-
-    // Mettre à jour la variable globale data également
-    data = window.allWorks;
-
-    // Mettre à jour l'affichage
-    displayGalleryItems(window.allWorks);
-
-  } catch (error) {
-    console.error("Erreur lors de la demande DELETE :", error);
-    throw error;
-  }
-}
-
-  // Création des icônes de corbeille 
-  function createTrashIcons(figures) {
-    figures.forEach(figure => {
-      figure.removeChild(figure.querySelector("figcaption"));
-  
-      const trashIcon = document.createElement("i");
-      trashIcon.className = "fa-regular fa-trash-can";
-      trashIcon.addEventListener("click", handleTrashIconClick);
-  
-      const iconContainer = document.createElement("div");
-      iconContainer.className = "icon-container";
-      iconContainer.style.position = "absolute";
-      iconContainer.style.top = "10px";
-      iconContainer.style.right = "5px";
-      iconContainer.style.padding = "5px";
-      iconContainer.style.backgroundColor = "#000";  // Fond noir
-  
-      // Style pour l'icône blanche
-      trashIcon.style.color = "#fff"; 
-  
-      iconContainer.appendChild(trashIcon);
-  
-      figure.style.position = "relative";
-      figure.appendChild(iconContainer);
-    });
-  }
-
-const modal = document.querySelector(".modal");
-
-  function displayGalleryContent() {
-    console.log("Display Gallery Content Clicked");
-    
-    // Efface le contenu existant de la modale
-    modal.innerHTML = "";
-  
-    // Crée un conteneur pour le contenu de la modale
-    const modalContent = document.createElement("div");
-  
-    // Ajoute le titre h1 à la modale
-    const title = document.createElement("h1");
-    title.textContent = "Galerie photo";
-    modalContent.appendChild(title);
-  
-  // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
-  const galleryClone = galleryContent.cloneNode(true);
-  galleryClone.classList.add("modal-gallery");
-
-  modalContent.appendChild(galleryClone);
-  
-  // Appelle la fonction pour créer les icônes de corbeille
-  createTrashIcons(galleryClone.querySelectorAll("figure"));
-
-    // Ajoute le bouton "Ajouter une photo" à la modale
-    const addButton = document.createElement("button");
-    addButton.id = "boutonAjoutdePhoto";
-    addButton.className = "modal-button";
-    addButton.textContent = "Ajouter une photo";
-    modalContent.appendChild(addButton);
-  
-    // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
-  addButton.addEventListener("click", handleAddPhotoButtonClick);
-    
-  // Ajoute le conteneur de la modale à la modale
-    modal.appendChild(modalContent);
-  
-    // Ajoute un gestionnaire d'événements pour fermer la modale
-    const closeModalButton = document.createElement("button");
-    closeModalButton.className = "close-modal modal-trigger";
-    closeModalButton.textContent = "X";
-    closeModalButton.addEventListener("click", function () {
-      console.log("Close Modal Clicked");
-      toggleModal();
-    });
-  
-    modal.appendChild(closeModalButton);
-   
-    
 // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 async function handleAddPhotoButtonClick() {
  
@@ -657,38 +374,315 @@ if (backButton) {
 
 }
 
+function displayGalleryItems(data) {
+  console.log("Displaying gallery items with data:", data);
+  const galleryDiv = document.getElementById("gallery");
+
+  // Vérifie si l'élément "gallery" existe sur la page
+  if (galleryDiv) {
+    galleryDiv.innerHTML = "";
+
+    data.forEach(item => {
+      const figureElement = document.createElement("figure");
+      figureElement.dataset.id = item.id; // Ajoute un attribut data-id avec l'ID de l'image
+
+      const imgElement = document.createElement("img");
+      imgElement.src = item.imageUrl;
+      imgElement.alt = item.title;
+
+      const figcaptionElement = document.createElement("figcaption");
+      figcaptionElement.textContent = item.title;
+
+      figureElement.appendChild(imgElement);
+      figureElement.appendChild(figcaptionElement);
+
+      galleryDiv.appendChild(figureElement);
+    });
   }
-  
-      if (token) {
-        // Utilisateur connecté
-        fetchData();
+}
 
-        // Ajoutez dynamiquement un bouton de déconnexion
-        const logoutButton = document.createElement("button");
-        logoutButton.id = "logoutButton";
-        logoutButton.textContent = "Logout";
-        logoutButton.addEventListener("click", function () {
-         
-          // Déconnectez l'utilisateur en supprimant le token
-          localStorage.removeItem('token');
-         
-          // Redirigez l'utilisateur vers la page de connexion
-          window.location.href = "/login/login.html";
-        });
+// Déclaration de la fonction pour filtrer les travaux par catégorie
+function filterByCategory(categoryId) {
+ 
+  // Récupère tous les travaux depuis la variable globale
+  let allWorks = window.allWorks || [];
 
-        // Ajoutez le bouton à un élément existant sur la page (par exemple, le header)
-        const header = document.querySelector("header");
-        if (header) {
-          header.appendChild(logoutButton);
-        }
-      } else {
-        // Utilisateur non connecté
-        
-        console.log("L'utilisateur n'est pas connecté.");
+  // Filtrer les travaux en fonction de la catégorie
+  const filteredWorks = (categoryId === 'all') ?
+    allWorks :
+    allWorks.filter(work => work.categoryId === categoryId);
 
-        // Appel de la fonction pour afficher dynamiquement les travaux même pour les utilisateurs non connectés
-        fetchData();
+  // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
+  displayGalleryItems(filteredWorks);
+}
+
+// Fonction asynchrone pour récupérer les données de l'API
+async function fetchData() {
+  const apiUrl = "http://localhost:5678/api/works";
+  try {
+    const response = await fetch(apiUrl);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("La requête vers l'API a réussi. Statut :", response.status);
+      console.log("Données récupérées de l'API :", data);
+
+      // Supprimer l'image si elle a été marquée pour suppression
+      if (window.imageToDelete) {
+        await deleteImage(window.imageToDelete);
+        window.imageToDelete = null; // Réinitialiser la variable après la suppression
       }
+
+      // Stocke les données pour les utiliser lors du filtrage
+      window.allWorks = data;
+
+      // Appel de la fonction pour afficher dynamiquement les travaux
+      displayGalleryItems(data);
+
+      // Mise à jour de l'affichage du bouton Login/Logout
+      updateLoginLogoutButton();
+    } else {
+      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
+    }
+  } catch (error) {
+    console.error("Une erreur s'est produite lors de la requête :", error);
+  }
+}
+
+function toggleEditModeBanner(isEditMode) {
+  const header = document.querySelector("header");
+
+  // Vérifie si l'élément du header existe
+  if (header) {
+   
+    // Vérifie si le mode édition est activé
+    if (isEditMode) {
+     
+      // Crée la bande noire avec le texte "Mode édition"
+      const editModeBanner = document.createElement("div");
+      editModeBanner.className = "edit-mode-banner";
+
+      // Crée l'icône Font Awesome
+      const iconElement = document.createElement("i");
+      iconElement.classList.add("fa-regular", "fa-pen-to-square", "fa-xs");
+
+      // Ajoute l'icône à la bannière
+      editModeBanner.appendChild(iconElement);
+
+      // Crée l'élément pour le texte "Mode édition"
+      const textElement = document.createElement("span");
+      textElement.textContent = " Mode édition";
+
+      // Ajoute le texte à la bannière
+      editModeBanner.appendChild(textElement);
+
+      // Ajoute la bande noire au-dessus du header
+      header.parentNode.insertBefore(editModeBanner, header);
+
+      // Ajoute une classe au header pour ajuster la position
+      header.classList.add("header-with-banner");
+    } else {
+      
+      // Supprime la bande noire et la classe du header
+      const editModeBanner = document.querySelector(".edit-mode-banner");
+      if (editModeBanner) {
+        editModeBanner.remove();
+      }
+
+      header.classList.remove("header-with-banner");
     }
   }
-});
+}
+
+// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
+function isLoggedIn() {
+  const token = localStorage.getItem('token');
+  return !!token; 
+}
+
+// Fonction pour mettre à jour la visibilité des filtres en fonction de la connexion
+function updateFilterVisibility() {
+  const filtersContainer = document.getElementById("categoryButtons");
+  if (filtersContainer) {
+    
+    filtersContainer.classList.toggle("hidden", isLoggedIn());
+  }
+}
+
+function updateLoginLogoutButton() {
+  const token = localStorage.getItem('token');
+  const loginLink = document.querySelector("nav li a[href='login/login.html']");
+  const logoutButton = document.getElementById("logoutButton");
+  
+
+  if (token) {
+   
+    // Utilisateur connecté
+    // Remplace le lien "Login" par le bouton "Logout"
+    if (loginLink && logoutButton) {
+      loginLink.replaceWith(logoutButton);
+    }
+   
+    // Mise à jour de la visibilité des filtres
+    updateFilterVisibility();
+
+    toggleEditModeBanner(true);
+  } else {
+   
+    // Utilisateur non connecté
+    // Remplace le bouton "Logout" par le lien "Login"
+    if (logoutButton && loginLink) {
+      logoutButton.replaceWith(loginLink);
+    }
+
+    // Mise à jour de la visibilité des filtres
+    updateFilterVisibility();
+
+    toggleEditModeBanner(false);
+  }
+}
+
+// Fonction pour mettre à jour la galerie principale
+async function updateGallery() {
+  const apiUrl = "http://localhost:5678/api/works";
+  try {
+    // Supprimer l'image si elle a été marquée pour suppression
+    if (window.imageToDelete) {
+      await deleteImage(window.imageToDelete);
+      window.imageToDelete = null; // Réinitialiser la variable après la suppression
+    }
+
+    const response = await fetch(apiUrl);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
+
+      // Appel de la fonction pour afficher dynamiquement les travaux
+      displayGalleryItems(data);
+
+      // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
+      window.allWorks = data;
+
+      console.log("Galerie mise à jour avec succès !");
+    } else {
+      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
+    }
+  } catch (error) {
+    console.error("Une erreur s'est produite lors de la requête :", error);
+  }
+}
+
+// Gestionnaire d'événements pour l'icône de la corbeille
+async function handleTrashIconClick(event) {
+  const figureElement = event.target.closest("figure");
+  if (!figureElement) {
+    console.error("Élément figure introuvable.");
+    return;
+  }
+
+  const imageId = figureElement.dataset.id;
+  if (!imageId) {
+    console.error("ID de l'image introuvable.");
+    return;
+  }
+
+  // Effectuer la demande de suppression à l'API en utilisant imageId
+  try {
+    const apiUrl = `http://localhost:5678/api/works/${imageId}`;
+    const token = localStorage.getItem('token');
+    const response = await fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP ! Statut : ${response.status}`);
+    }
+
+    console.log("Réponse de l'API (Suppression) :", response.statusText);
+
+    // Si la suppression côté serveur réussit, mettez à jour le tableau allWorks localement
+    const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
+    if (indexOfDeleted !== -1) {
+      window.allWorks.splice(indexOfDeleted, 1);
+    }
+
+    // Mettre également à jour la variable globale data
+    data = window.allWorks;
+
+    // Mettre à jour l'affichage
+    displayGalleryItems(window.allWorks);
+    updateGallery();
+
+  } catch (error) {
+    console.error("Erreur lors de la demande DELETE :", error);
+    throw error;
+  }
+}
+
+async function deleteImage(imageId) {
+  const apiUrl = `http://localhost:5678/api/works/${imageId}`;
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    console.log("Réponse de l'API (Suppression) :", response.statusText);
+
+    // Si la suppression côté serveur est réussie, mettez à jour le tableau allWorks localement
+    const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
+    if (indexOfDeleted !== -1) {
+      window.allWorks.splice(indexOfDeleted, 1);
+    }
+
+    // Mettre à jour la variable globale data également
+    data = window.allWorks;
+
+    // Mettre à jour l'affichage
+    displayGalleryItems(window.allWorks);
+
+  } catch (error) {
+    console.error("Erreur lors de la demande DELETE :", error);
+    throw error;
+  }
+}
+
+// Création des icônes de corbeille 
+function createTrashIcons(figures) {
+  figures.forEach(figure => {
+    figure.removeChild(figure.querySelector("figcaption"));
+
+    const trashIcon = document.createElement("i");
+    trashIcon.className = "fa-regular fa-trash-can";
+    trashIcon.addEventListener("click", handleTrashIconClick);
+
+    const iconContainer = document.createElement("div");
+    iconContainer.className = "icon-container";
+    iconContainer.style.position = "absolute";
+    iconContainer.style.top = "10px";
+    iconContainer.style.right = "5px";
+    iconContainer.style.padding = "5px";
+    iconContainer.style.backgroundColor = "#000";  // Fond noir
+
+    // Style pour l'icône blanche
+    trashIcon.style.color = "#fff"; 
+
+    iconContainer.appendChild(trashIcon);
+
+    figure.style.position = "relative";
+    figure.appendChild(iconContainer);
+  });
+}
