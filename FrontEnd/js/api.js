@@ -591,9 +591,11 @@ if (backButton) {
         console.log("Réponse de l'API :", data);
 
         updatePhotoList(data);
-      } catch (error) {
-        console.error("Erreur lors de la demande POST :", error);
-      }
+      // Fermer la modale après l'ajout de la photo
+      toggleModal();
+    } catch (error) {
+      console.error("Erreur lors de la demande POST :", error);
+    }
     });
   }
 
