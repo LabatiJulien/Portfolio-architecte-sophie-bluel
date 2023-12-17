@@ -1,4 +1,7 @@
+let data
+
 function displayGalleryItems(data) {
+  console.log("Displaying gallery items with data:", data);
   const galleryDiv = document.getElementById("gallery");
 
   // Vérifie si l'élément "gallery" existe sur la page
@@ -24,11 +27,13 @@ function displayGalleryItems(data) {
   }
 }
 
+
+
 // Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
  
   // Récupère tous les travaux depuis la variable globale
-  const allWorks = window.allWorks || [];
+  let allWorks = window.allWorks || [];
 
   // Filtrer les travaux en fonction de la catégorie
   const filteredWorks = (categoryId === 'all') ?
@@ -39,7 +44,7 @@ function filterByCategory(categoryId) {
   displayGalleryItems(filteredWorks);
 }
 
-// Déclaration de la fonction asynchrone pour récupérer les données de l'API
+// Fonction asynchrone pour récupérer les données de l'API
 async function fetchData() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
@@ -50,11 +55,17 @@ async function fetchData() {
       console.log("La requête vers l'API a réussi. Statut :", response.status);
       console.log("Données récupérées de l'API :", data);
 
-      // Appel de la fonction pour afficher dynamiquement les travaux
-      displayGalleryItems(data);
+      // Supprimer l'image si elle a été marquée pour suppression
+      if (window.imageToDelete) {
+        await deleteImage(window.imageToDelete);
+        window.imageToDelete = null; // Réinitialiser la variable après la suppression
+      }
 
       // Stocke les données pour les utiliser lors du filtrage
       window.allWorks = data;
+
+      // Appel de la fonction pour afficher dynamiquement les travaux
+      displayGalleryItems(data);
 
       // Mise à jour de l'affichage du bouton Login/Logout
       updateLoginLogoutButton();
@@ -297,9 +308,16 @@ function updatePhotoList(newPhotoData) {
   updateGallery();
 }
 
+// Fonction pour mettre à jour la galerie principale
 async function updateGallery() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
+    // Supprimer l'image si elle a été marquée pour suppression
+    if (window.imageToDelete) {
+      await deleteImage(window.imageToDelete);
+      window.imageToDelete = null; // Réinitialiser la variable après la suppression
+    }
+
     const response = await fetch(apiUrl);
 
     if (response.ok) {
@@ -312,11 +330,7 @@ async function updateGallery() {
       // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
       window.allWorks = data;
 
-      // Si la modale est ouverte, mettez à jour la galerie dans la modale également
-      if (modal.classList.contains("active")) {
-        const modalGallery = modal.querySelector(".modal-gallery");
-        createTrashIcons(modalGallery.querySelectorAll("figure"));
-      }
+      console.log("Galerie mise à jour avec succès !");
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
     }
@@ -325,30 +339,59 @@ async function updateGallery() {
   }
 }
 
+
 // Gestionnaire d'événements pour l'icône de la corbeille
-function handleTrashIconClick(event) {
-  const figureElement = event.target.closest("figure"); // Trouve l'élément figure parent
+async function handleTrashIconClick(event) {
+  const figureElement = event.target.closest("figure");
   if (!figureElement) {
-    console.error("Figure element not found.");
+    console.error("Élément figure introuvable.");
     return;
   }
 
-  const imageId = figureElement.dataset.id; // Récupère l'ID de l'image depuis l'attribut data-id
+  const imageId = figureElement.dataset.id;
   if (!imageId) {
-    console.error("Image ID not found.");
+    console.error("ID de l'image introuvable.");
     return;
   }
 
-  // Effectuez la demande de suppression à l'API en utilisant imageId
-  deleteImage(imageId)
-    .then(() => {
-      // Retirez l'élément figure de la galerie côté client après la suppression côté serveur
-      figureElement.remove();
-    })
-    .catch(error => {
-      console.error("Error deleting image:", error);
+  // Effectuer la demande de suppression à l'API en utilisant imageId
+  try {
+    const apiUrl = `http://localhost:5678/api/works/${imageId}`;
+    const token = localStorage.getItem('token');
+    const response = await fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/json",
+      },
     });
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP ! Statut : ${response.status}`);
+    }
+
+    console.log("Réponse de l'API (Suppression) :", response.statusText);
+
+    // Si la suppression côté serveur réussit, mettez à jour le tableau allWorks localement
+    const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
+    if (indexOfDeleted !== -1) {
+      window.allWorks.splice(indexOfDeleted, 1);
+    }
+
+    // Mettre également à jour la variable globale data
+    data = window.allWorks;
+
+    // Mettre à jour l'affichage
+    displayGalleryItems(window.allWorks);
+    updateGallery();
+
+  } catch (error) {
+    console.error("Erreur lors de la demande DELETE :", error);
+    throw error;
+  }
 }
+
+
 
 async function deleteImage(imageId) {
   const apiUrl = `http://localhost:5678/api/works/${imageId}`;
@@ -367,9 +410,22 @@ async function deleteImage(imageId) {
     }
 
     console.log("Réponse de l'API (Suppression) :", response.statusText);
+
+    // Si la suppression côté serveur est réussie, mettez à jour le tableau allWorks localement
+    const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
+    if (indexOfDeleted !== -1) {
+      window.allWorks.splice(indexOfDeleted, 1);
+    }
+
+    // Mettre à jour la variable globale data également
+    data = window.allWorks;
+
+    // Mettre à jour l'affichage
+    displayGalleryItems(window.allWorks);
+
   } catch (error) {
     console.error("Erreur lors de la demande DELETE :", error);
-    throw error; // Renvoie l'erreur pour la gestion dans la fonction appelante
+    throw error;
   }
 }
 
@@ -587,7 +643,7 @@ if (backButton) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const data = await response.json();
+        data = await response.json();
         console.log("Réponse de l'API :", data);
 
         updatePhotoList(data);
