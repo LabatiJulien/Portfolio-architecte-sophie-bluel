@@ -1,3 +1,4 @@
+
 let data
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -135,30 +136,26 @@ function displayGalleryContent(modal) {
         // Utilisateur connecté
         fetchData();
 
-        // Ajoutez dynamiquement un bouton de déconnexion
+        // Ajoute dynamiquement un bouton de déconnexion
         const logoutButton = document.createElement("button");
         logoutButton.id = "logoutButton";
         logoutButton.textContent = "Logout";
         logoutButton.addEventListener("click", function () {
          
-          // Déconnectez l'utilisateur en supprimant le token
           localStorage.removeItem('token');
          
-          // Redirigez l'utilisateur vers la page de connexion
           window.location.href = "/login/login.html";
         });
 
-        // Ajoutez le bouton à un élément existant sur la page (par exemple, le header)
+        // Ajoutez le bouton à un élément existant sur la page
         const header = document.querySelector("header");
         if (header) {
           header.appendChild(logoutButton);
         }
       } else {
-        // Utilisateur non connecté
-        
+         
         console.log("L'utilisateur n'est pas connecté.");
 
-        // Appel de la fonction pour afficher dynamiquement les travaux même pour les utilisateurs non connectés
         fetchData();
       }
     }
@@ -179,7 +176,6 @@ function toggleModal() {
   const modalContainer = document.querySelector(".modal-container");
   const overlay = document.querySelector(".overlay");
 
-  // Inverse la classe pour afficher ou masquer la modale
   modalContainer.classList.toggle("active");
 
   // Ajoute ou supprime le gestionnaire d'événements sur l'overlay
@@ -226,13 +222,11 @@ function updatePhotoList(newPhotoData) {
 }
 
 async function handleAddPhotoButtonClick(modal) {
-  // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
   // Récupère le conteneur existant de la modale
   const modalContent = modal.querySelector("div");
 
- // Remplace le contenu existant par celui de la nouvelle modale
  modalContent.innerHTML = `
   
   <div id="container">
@@ -313,28 +307,25 @@ scriptElement.text = `
 `;
 document.head.appendChild(scriptElement);
 
-  // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
+  // Ajoute un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
   const closeNewModalButton = modalContent.querySelector(".close-new-modal");
   if (closeNewModalButton) {
     closeNewModalButton.addEventListener("click", function () {
       
     });
 
-   // Ajoutez un gestionnaire d'événements à l'icône de flèche gauche
+   // Ajoute un gestionnaire d'événements à l'icône de flèche gauche
 const backButton = modalContent.querySelector("#backButton");
 if (backButton) {
   backButton.addEventListener("click", function () {
-    // Logique à exécuter lorsque le bouton de retour est cliqué
+   
     console.log("Bouton de retour cliqué !");
     
-    // Affichez à nouveau la modale mise à jour dynamiquement
-    displayGalleryContent();
+    displayGalleryItems();
   });
 }
-
-  }
-
-  // Ajoutez un gestionnaire d'événements au formulaire
+ }
+ // Ajoute un gestionnaire d'événements au formulaire
   const addPhotoForm = modalContent.querySelector("#addPhotoForm");
   if (addPhotoForm) {
     addPhotoForm.addEventListener("submit", async function (event) {
@@ -364,7 +355,7 @@ if (backButton) {
         console.log("Réponse de l'API :", data);
 
         updatePhotoList(data);
-      // Fermer la modale après l'ajout de la photo
+      
       toggleModal();
     } catch (error) {
       console.error("Erreur lors de la demande POST :", error);
@@ -384,7 +375,7 @@ function displayGalleryItems(data) {
 
     data.forEach(item => {
       const figureElement = document.createElement("figure");
-      figureElement.dataset.id = item.id; // Ajoute un attribut data-id avec l'ID de l'image
+      figureElement.dataset.id = item.id; 
 
       const imgElement = document.createElement("img");
       imgElement.src = item.imageUrl;
@@ -403,20 +394,13 @@ function displayGalleryItems(data) {
 
 // Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
- 
-  // Récupère tous les travaux depuis la variable globale
   let allWorks = window.allWorks || [];
-
-  // Filtrer les travaux en fonction de la catégorie
   const filteredWorks = (categoryId === 'all') ?
     allWorks :
     allWorks.filter(work => work.categoryId === categoryId);
-
-  // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
   displayGalleryItems(filteredWorks);
 }
 
-// Dans la fonction fetchData
 async function fetchData() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
@@ -427,20 +411,13 @@ async function fetchData() {
       console.log("La requête vers l'API a réussi. Statut :", response.status);
       console.log("Données récupérées de l'API :", data);
 
-      // Supprimer l'image si elle a été marquée pour suppression
       if (window.imageToDelete) {
         await deleteImage(window.imageToDelete);
-        window.imageToDelete = null; // Réinitialiser la variable après la suppression
+        window.imageToDelete = null; 
       }
-
-      // Stocke les données pour les utiliser lors du filtrage
       window.allWorks = data;
-
-      // Ajoutez cette console.log pour vérifier que les données sont mises à jour
-      console.log("Données mises à jour :", window.allWorks);
-
-      // Appel de la fonction pour afficher dynamiquement les travaux
-      displayGalleryItems(data);
+  console.log("Données mises à jour :", window.allWorks);
+  displayGalleryItems(data);
 
       // Mise à jour de l'affichage du bouton Login/Logout
       updateLoginLogoutButton();
@@ -516,8 +493,6 @@ function updateLoginLogoutButton() {
   const token = localStorage.getItem('token');
   const loginLink = document.querySelector("nav li a[href='login/login.html']");
   const logoutButton = document.getElementById("logoutButton");
-  
-
   if (token) {
    
     // Utilisateur connecté
@@ -549,10 +524,9 @@ function updateLoginLogoutButton() {
 async function updateGallery() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
-    // Supprimer l'image si elle a été marquée pour suppression
     if (window.imageToDelete) {
       await deleteImage(window.imageToDelete);
-      window.imageToDelete = null; // Réinitialiser la variable après la suppression
+      window.imageToDelete = null; 
     }
 
     const response = await fetch(apiUrl);
@@ -561,10 +535,8 @@ async function updateGallery() {
       const data = await response.json();
       console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
 
-      // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
 
-      // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
       window.allWorks = data;
 
       console.log("Galerie mise à jour avec succès !");
@@ -590,7 +562,7 @@ async function handleTrashIconClick(event) {
     return;
   }
 
-  // Effectuer la demande de suppression à l'API en utilisant imageId
+  // Effectue la demande de suppression à l'API en utilisant imageId
   try {
     const apiUrl = `http://localhost:5678/api/works/${imageId}`;
     const token = localStorage.getItem('token');
@@ -608,16 +580,14 @@ async function handleTrashIconClick(event) {
 
     console.log("Réponse de l'API (Suppression) :", response.statusText);
 
-    // Si la suppression côté serveur réussit, mettez à jour le tableau allWorks localement
+    // Si la suppression côté serveur réussit, met à jour le tableau allWorks localement
     const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
     if (indexOfDeleted !== -1) {
       window.allWorks.splice(indexOfDeleted, 1);
     }
 
-    // Mettre également à jour la variable globale data
     data = window.allWorks;
 
-    // Mettre à jour l'affichage
     displayGalleryItems(window.allWorks);
     updateGallery();
 
@@ -645,16 +615,13 @@ async function deleteImage(imageId) {
 
     console.log("Réponse de l'API (Suppression) :", response.statusText);
 
-    // Si la suppression côté serveur est réussie, mettez à jour le tableau allWorks localement
     const indexOfDeleted = window.allWorks.findIndex(work => work.id === imageId);
     if (indexOfDeleted !== -1) {
       window.allWorks.splice(indexOfDeleted, 1);
     }
 
-    // Mettre à jour la variable globale data également
     data = window.allWorks;
 
-    // Mettre à jour l'affichage
     displayGalleryItems(window.allWorks);
 
   } catch (error) {

@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
     loginForm.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      // Récupérez les valeurs des champs
+      // Récupére les valeurs des champs
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      // Effectuez une requête à votre API pour vérifier les identifiants
+      // Effectue une requête à votre API pour vérifier les identifiants
       try {
         const response = await fetch("http://localhost:5678/api/users/login", {
           method: "POST",
@@ -22,16 +22,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (response.ok) {
-          // Récupérez le token de la réponse
+          // Récupére le token de la réponse
           const { token } = await response.json();
 
-          // Stockez le token dans le stockage local
           localStorage.setItem('token', token);
 
-          // Redirigez l'utilisateur vers la page d'accueil après une connexion réussie
+          // Redirige l'utilisateur vers la page d'accueil après une connexion réussie
           window.location.href = "/index.html";
         } else {
-          // Affichez un message d'erreur en cas d'identifiants incorrects
+          
+          // Affiche un message d'erreur en cas d'identifiants incorrects
           errorMessage.textContent = "Erreur dans l'identifiant ou le mot de passe";
         }
       } catch (error) {
