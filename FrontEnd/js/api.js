@@ -96,14 +96,14 @@ function displayGalleryContent(modal) {
   title.textContent = "Galerie photo";
   modalContent.appendChild(title);
 
-  // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
-  const galleryClone = galleryContent.cloneNode(true);
-  galleryClone.classList.add("modal-gallery");
+ // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
+ const galleryClone = galleryContent.cloneNode(true);
+ galleryClone.classList.add("modal-gallery");
 
-  modalContent.appendChild(galleryClone);
+ modalContent.appendChild(galleryClone);
 
-  // Appelle la fonction pour créer les icônes de corbeille
-  createTrashIcons(galleryClone.querySelectorAll("figure"));
+ // Appelle la fonction pour créer les icônes de corbeille uniquement pour les éléments de la modale
+ createTrashIcons(galleryClone.querySelectorAll("figure"));
 
   // Ajoute le bouton "Ajouter une photo" à la modale
   const addButton = document.createElement("button");
@@ -389,8 +389,12 @@ function displayGalleryItems(data) {
 
       galleryDiv.appendChild(figureElement);
     });
+
+    // Appel à nouveau la fonction createTrashIcons pour réappliquer les trash-icons
+    createTrashIcons(galleryDiv.querySelectorAll("figure"));
   }
 }
+
 
 // Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
@@ -633,26 +637,31 @@ async function deleteImage(imageId) {
 // Création des icônes de corbeille 
 function createTrashIcons(figures) {
   figures.forEach(figure => {
-    figure.removeChild(figure.querySelector("figcaption"));
+    const figcaption = figure.querySelector("figcaption");
 
-    const trashIcon = document.createElement("i");
-    trashIcon.className = "fa-regular fa-trash-can";
-    trashIcon.addEventListener("click", handleTrashIconClick);
+    // Vérifie si figcaption existe avant de le supprimer
+    if (figcaption) {
+      figure.removeChild(figcaption);
 
-    const iconContainer = document.createElement("div");
-    iconContainer.className = "icon-container";
-    iconContainer.style.position = "absolute";
-    iconContainer.style.top = "10px";
-    iconContainer.style.right = "5px";
-    iconContainer.style.padding = "5px";
-    iconContainer.style.backgroundColor = "#000";  // Fond noir
+      const trashIcon = document.createElement("i");
+      trashIcon.className = "fa-regular fa-trash-can";
+      trashIcon.addEventListener("click", handleTrashIconClick);
 
-    // Style pour l'icône blanche
-    trashIcon.style.color = "#fff"; 
+      const iconContainer = document.createElement("div");
+      iconContainer.className = "icon-container";
+      iconContainer.style.position = "absolute";
+      iconContainer.style.top = "10px";
+      iconContainer.style.right = "5px";
+      iconContainer.style.padding = "5px";
+      iconContainer.style.backgroundColor = "#000";  // Fond noir
 
-    iconContainer.appendChild(trashIcon);
+      // Style pour l'icône blanche
+      trashIcon.style.color = "#fff"; 
 
-    figure.style.position = "relative";
-    figure.appendChild(iconContainer);
+      iconContainer.appendChild(trashIcon);
+
+      figure.style.position = "relative";
+      figure.appendChild(iconContainer);
+    }
   });
 }
