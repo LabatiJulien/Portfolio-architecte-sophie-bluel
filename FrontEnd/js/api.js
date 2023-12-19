@@ -96,14 +96,16 @@ function displayGalleryContent(modal) {
   title.textContent = "Galerie photo";
   modalContent.appendChild(title);
 
- // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
- const galleryClone = galleryContent.cloneNode(true);
- galleryClone.classList.add("modal-gallery");
+// Clone le contenu de la galerie et l'ajoute au conteneur de la modale
+const galleryClone = galleryContent.cloneNode(true);
+galleryClone.classList.add("modal-gallery");
 
- modalContent.appendChild(galleryClone);
+modalContent.appendChild(galleryClone);
 
- // Appelle la fonction pour créer les icônes de corbeille uniquement pour les éléments de la modale
- createTrashIcons(galleryClone.querySelectorAll("figure"));
+// Appelle la fonction pour créer les icônes de corbeille uniquement pour les éléments de la modale
+if (modal === modalContent) {
+  createTrashIcons(galleryClone.querySelectorAll("figure"));
+}
 
   // Ajoute le bouton "Ajouter une photo" à la modale
   const addButton = document.createElement("button");
