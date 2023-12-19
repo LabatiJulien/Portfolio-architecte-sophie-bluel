@@ -1,13 +1,14 @@
+let data = [];
 function displayGalleryItems(data) {
   const galleryDiv = document.getElementById("gallery");
 
   // Vérifie si l'élément "gallery" existe sur la page
   if (galleryDiv) {
-    galleryDiv.innerHTML = "";
+    const fragment = document.createDocumentFragment();
 
     data.forEach(item => {
       const figureElement = document.createElement("figure");
-      figureElement.dataset.id = item.id; // Ajoute un attribut data-id avec l'ID de l'image
+      figureElement.dataset.id = item.id;
 
       const imgElement = document.createElement("img");
       imgElement.src = item.imageUrl;
@@ -19,8 +20,12 @@ function displayGalleryItems(data) {
       figureElement.appendChild(imgElement);
       figureElement.appendChild(figcaptionElement);
 
-      galleryDiv.appendChild(figureElement);
+      fragment.appendChild(figureElement);
     });
+
+    // Vide la galerie existante et ajoute les nouveaux éléments
+    galleryDiv.innerHTML = "";
+    galleryDiv.appendChild(fragment);
   }
 }
 
@@ -46,17 +51,13 @@ async function fetchData() {
     const response = await fetch(apiUrl);
 
     if (response.ok) {
-      const data = await response.json();
+      data = await response.json(); // Mise à jour de la variable globale data
       console.log("La requête vers l'API a réussi. Statut :", response.status);
       console.log("Données récupérées de l'API :", data);
 
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
-
-      // Stocke les données pour les utiliser lors du filtrage
-      window.allWorks = data;
-
-      // Mise à jour de l'affichage du bouton Login/Logout
+ // Mise à jour de l'affichage du bouton Login/Logout
       updateLoginLogoutButton();
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
@@ -303,7 +304,7 @@ async function updateGallery() {
     const response = await fetch(apiUrl);
 
     if (response.ok) {
-      const data = await response.json();
+      data = await response.json(); // Mise à jour de la variable globale data
       console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
 
       // Appel de la fonction pour afficher dynamiquement les travaux
@@ -572,30 +573,30 @@ if (backButton) {
       formData.append("title", document.getElementById("photoTitle").value);
       formData.append("category", document.getElementById("category").value);
 
-      try {
         const token = localStorage.getItem('token');
-        const response = await fetch("http://localhost:5678/api/works", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Accept": "application/json",
-          },
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Réponse de l'API :", data);
-
-        updatePhotoList(data);
-      // Fermer la modale après l'ajout de la photo
-      toggleModal();
-    } catch (error) {
-      console.error("Erreur lors de la demande POST :", error);
-    }
+        try {
+          const response = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Accept": "application/json",
+            },
+            body: formData,
+          });
+        
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+        
+          // Mettez à jour la galerie après l'ajout de la photo
+          await updateGallery();
+        
+          // Fermer la modale après l'ajout de la photo
+          await toggleModal();
+        } catch (error) {
+          console.error("Erreur lors de la demande POST :", error);
+         
+}   
     });
   }
 
