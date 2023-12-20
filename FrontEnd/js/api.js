@@ -35,7 +35,7 @@ function filterByCategory(categoryId) {
   // Récupère tous les travaux depuis la variable globale
   const allWorks = window.allWorks || [];
 
-  // Filtrer les travaux en fonction de la catégorie
+  // Filtre les travaux en fonction de la catégorie
   const filteredWorks = (categoryId === 'all') ?
     allWorks :
     allWorks.filter(work => work.categoryId === categoryId);
@@ -51,13 +51,13 @@ async function fetchData() {
     const response = await fetch(apiUrl);
 
     if (response.ok) {
-      data = await response.json(); // Mise à jour de la variable globale data
+      data = await response.json();
       console.log("La requête vers l'API a réussi. Statut :", response.status);
       console.log("Données récupérées de l'API :", data);
 
-      // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
- // Mise à jour de l'affichage du bouton Login/Logout
+ 
+      // Mise à jour de l'affichage du bouton Login/Logout
       updateLoginLogoutButton();
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
@@ -70,34 +70,27 @@ async function fetchData() {
 function toggleEditModeBanner(isEditMode) {
   const header = document.querySelector("header");
 
-  // Vérifie si l'élément du header existe
   if (header) {
    
-    // Vérifie si le mode édition est activé
     if (isEditMode) {
      
       // Crée la bande noire avec le texte "Mode édition"
       const editModeBanner = document.createElement("div");
       editModeBanner.className = "edit-mode-banner";
 
-      // Crée l'icône Font Awesome
       const iconElement = document.createElement("i");
       iconElement.classList.add("fa-regular", "fa-pen-to-square", "fa-xs");
 
-      // Ajoute l'icône à la bannière
       editModeBanner.appendChild(iconElement);
 
       // Crée l'élément pour le texte "Mode édition"
       const textElement = document.createElement("span");
       textElement.textContent = " Mode édition";
 
-      // Ajoute le texte à la bannière
       editModeBanner.appendChild(textElement);
 
-      // Ajoute la bande noire au-dessus du header
       header.parentNode.insertBefore(editModeBanner, header);
 
-      // Ajoute une classe au header pour ajuster la position
       header.classList.add("header-with-banner");
     } else {
       
@@ -131,7 +124,6 @@ function updateLoginLogoutButton() {
   const token = localStorage.getItem('token');
   const loginLink = document.querySelector("nav li a[href='login/login.html']");
   const logoutButton = document.getElementById("logoutButton");
-  const filtersContainer = document.getElementById("categoryButtons"); 
 
   if (token) {
    
@@ -153,7 +145,6 @@ function updateLoginLogoutButton() {
       logoutButton.replaceWith(loginLink);
     }
 
-    // Mise à jour de la visibilité des filtres
     updateFilterVisibility();
 
     toggleEditModeBanner(false);
@@ -210,10 +201,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       const overlay = document.querySelector(".overlay");
       const galleryContent = document.getElementById("gallery");
 
-      // Ajoutez un gestionnaire d'événements persistant pour le clic sur l'overlay
+      // Ajoute un gestionnaire d'événements persistant pour le clic sur l'overlay
 overlay.addEventListener("click", overlayClickHandler);
 
-      // Vérifie si l'utilisateur est connecté
       const isUserLoggedIn = isLoggedIn();
 
       // Affiche ou masque le bouton "modifier" en fonction de la connexion
@@ -275,10 +265,9 @@ async function updateGallery() {
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
 
-      // Mettez à jour la variable globale pour une utilisation ultérieure lors du filtrage
       window.allWorks = data;
 
-      // Si la modale est ouverte, mettez à jour la galerie dans la modale également
+      // Si la modale est ouverte, met à jour la galerie dans la modale également
       if (modal.classList.contains("active")) {
         const modalGallery = modal.querySelector(".modal-gallery");
         createTrashIcons(modalGallery.querySelectorAll("figure"));
@@ -299,7 +288,6 @@ async function updateGallery() {
   }
 }
 
-
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
   const figureElement = event.target.closest("figure");
@@ -315,7 +303,8 @@ async function handleTrashIconClick(event) {
   }
 
   try {
-    // Effectuez la demande de suppression à l'API en utilisant imageId
+    
+    // Effectue la demande de suppression à l'API en utilisant imageId
     const apiUrl = `http://localhost:5678/api/works/${imageId}`;
     const token = localStorage.getItem('token');
 
@@ -331,10 +320,8 @@ async function handleTrashIconClick(event) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // Retirez l'élément figure de la galerie côté client après la suppression côté serveur
     figureElement.remove();
 
-    // Mettez à jour la galerie après la suppression
 await updateGallery();
   } catch (error) {
     console.error("Error deleting image:", error);
@@ -358,7 +345,6 @@ await updateGallery();
       iconContainer.style.padding = "5px";
       iconContainer.style.backgroundColor = "#000";  // Fond noir
   
-      // Style pour l'icône blanche
       trashIcon.style.color = "#fff"; 
   
       iconContainer.appendChild(trashIcon);
@@ -403,7 +389,6 @@ const modal = document.querySelector(".modal");
     // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
   addButton.addEventListener("click", handleAddPhotoButtonClick);
     
-  // Ajoute le conteneur de la modale à la modale
     modal.appendChild(modalContent);
   
     // Ajoute un gestionnaire d'événements pour fermer la modale
@@ -417,14 +402,10 @@ const modal = document.querySelector(".modal");
   
     modal.appendChild(closeModalButton);
  
-    
-// Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 async function handleAddPhotoButtonClick() {
  
-  // La logique que vous souhaitez exécuter lorsque le bouton est cliqué
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
-  // Récupère le conteneur existant de la modale
   const modalContent = modal.querySelector("div");
 
  // Remplace le contenu existant par celui de la nouvelle modale
@@ -508,28 +489,26 @@ scriptElement.text = `
 `;
 document.head.appendChild(scriptElement);
 
-  // Ajoutez un gestionnaire d'événements au bouton "Fermer" de la nouvelle modale
   const closeNewModalButton = modalContent.querySelector(".close-new-modal");
   if (closeNewModalButton) {
     closeNewModalButton.addEventListener("click", function () {
       
     });
 
-   // Ajoutez un gestionnaire d'événements à l'icône de flèche gauche
+   // Ajout un gestionnaire d'événements à l'icône de flèche gauche
 const backButton = modalContent.querySelector("#backButton");
 if (backButton) {
   backButton.addEventListener("click", function () {
-    // Logique à exécuter lorsque le bouton de retour est cliqué
+  
     console.log("Bouton de retour cliqué !");
     
-    // Affichez à nouveau la modale mise à jour dynamiquement
     displayGalleryContent();
   });
 }
 
   }
 
-  // Ajoutez un gestionnaire d'événements au formulaire
+  // Ajoute un gestionnaire d'événements au formulaire
   const addPhotoForm = modalContent.querySelector("#addPhotoForm");
   if (addPhotoForm) {
     addPhotoForm.addEventListener("submit", async function (event) {
@@ -555,10 +534,9 @@ if (backButton) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
         
-          // Mettez à jour la galerie après l'ajout de la photo
           await updateGallery();
         
-          // Fermer la modale après l'ajout de la photo
+          // Ferme la modale après l'ajout de la photo
           await toggleModal();
         } catch (error) {
           console.error("Erreur lors de la demande POST :", error);
@@ -575,30 +553,25 @@ if (backButton) {
         // Utilisateur connecté
         fetchData();
 
-        // Ajoutez dynamiquement un bouton de déconnexion
+        // Ajoute dynamiquement un bouton de déconnexion
         const logoutButton = document.createElement("button");
         logoutButton.id = "logoutButton";
         logoutButton.textContent = "Logout";
         logoutButton.addEventListener("click", function () {
          
-          // Déconnectez l'utilisateur en supprimant le token
           localStorage.removeItem('token');
          
-          // Redirigez l'utilisateur vers la page de connexion
           window.location.href = "/login/login.html";
         });
 
-        // Ajoutez le bouton à un élément existant sur la page (par exemple, le header)
         const header = document.querySelector("header");
         if (header) {
           header.appendChild(logoutButton);
         }
       } else {
-        // Utilisateur non connecté
         
         console.log("L'utilisateur n'est pas connecté.");
 
-        // Appel de la fonction pour afficher dynamiquement les travaux même pour les utilisateurs non connectés
         fetchData();
       }
     }

@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      // Effectue une requête à votre API pour vérifier les identifiants
+      // Effectue une requête à l'API pour vérifier les identifiants
       try {
         const response = await fetch("http://localhost:5678/api/users/login", {
           method: "POST",
