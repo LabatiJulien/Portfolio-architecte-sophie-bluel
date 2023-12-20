@@ -304,7 +304,7 @@ async function updateGallery() {
     const response = await fetch(apiUrl);
 
     if (response.ok) {
-      data = await response.json(); // Mise à jour de la variable globale data
+      data = await response.json();
       console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
 
       // Appel de la fonction pour afficher dynamiquement les travaux
@@ -318,6 +318,14 @@ async function updateGallery() {
         const modalGallery = modal.querySelector(".modal-gallery");
         createTrashIcons(modalGallery.querySelectorAll("figure"));
       }
+
+      console.log("Mise à jour de la galerie terminée");
+
+      // Création des icônes de corbeille pour les nouvelles figures de la modale
+      const modalGalleryClone = modal.querySelector(".modal-gallery");
+      if (modalGalleryClone) {
+        createTrashIcons(modalGalleryClone.querySelectorAll("figure"));
+      }
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
     }
@@ -325,6 +333,7 @@ async function updateGallery() {
     console.error("Une erreur s'est produite lors de la requête :", error);
   }
 }
+
 
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
@@ -361,7 +370,7 @@ async function handleTrashIconClick(event) {
     figureElement.remove();
 
     // Mettez à jour la galerie après la suppression
-    await updateGallery();
+await updateGallery();
   } catch (error) {
     console.error("Error deleting image:", error);
   }
