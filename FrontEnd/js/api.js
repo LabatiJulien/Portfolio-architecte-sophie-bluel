@@ -1,4 +1,5 @@
 let data = [];
+let modal = document.querySelector(".modal");
 function displayGalleryItems(data) {
   const galleryDiv = document.getElementById("gallery");
 
@@ -195,6 +196,8 @@ document.addEventListener("DOMContentLoaded", async function () {
           filterByCategory(3);
         });
       }
+// Initialisation de la variable modal à l'intérieur de la fonction DOMContentLoaded
+modal = document.querySelector(".modal");
 
       // Ajout de la modale
       const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
@@ -303,7 +306,7 @@ async function handleTrashIconClick(event) {
   }
 
   try {
-    
+
     // Effectue la demande de suppression à l'API en utilisant imageId
     const apiUrl = `http://localhost:5678/api/works/${imageId}`;
     const token = localStorage.getItem('token');
@@ -320,9 +323,11 @@ async function handleTrashIconClick(event) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
+    // Supprimer l'élément du DOM côté client
     figureElement.remove();
 
-await updateGallery();
+    // Mise à jour de la galerie principale
+    await updateGallery();
   } catch (error) {
     console.error("Error deleting image:", error);
   }
@@ -353,8 +358,6 @@ await updateGallery();
       figure.appendChild(iconContainer);
     });
   }
-
-const modal = document.querySelector(".modal");
 
   function displayGalleryContent() {
     console.log("Display Gallery Content Clicked");
