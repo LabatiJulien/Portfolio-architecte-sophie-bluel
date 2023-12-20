@@ -327,34 +327,24 @@ async function updateGallery() {
 }
 
 // Gestionnaire d'événements pour l'icône de la corbeille
-function handleTrashIconClick(event) {
-  const figureElement = event.target.closest("figure"); // Trouve l'élément figure parent
+async function handleTrashIconClick(event) {
+  const figureElement = event.target.closest("figure");
   if (!figureElement) {
     console.error("Figure element not found.");
     return;
   }
 
-  const imageId = figureElement.dataset.id; // Récupère l'ID de l'image depuis l'attribut data-id
+  const imageId = figureElement.dataset.id;
   if (!imageId) {
     console.error("Image ID not found.");
     return;
   }
 
-  // Effectuez la demande de suppression à l'API en utilisant imageId
-  deleteImage(imageId)
-    .then(() => {
-      // Retirez l'élément figure de la galerie côté client après la suppression côté serveur
-      figureElement.remove();
-    })
-    .catch(error => {
-      console.error("Error deleting image:", error);
-    });
-}
-
-async function deleteImage(imageId) {
-  const apiUrl = `http://localhost:5678/api/works/${imageId}`;
   try {
+    // Effectuez la demande de suppression à l'API en utilisant imageId
+    const apiUrl = `http://localhost:5678/api/works/${imageId}`;
     const token = localStorage.getItem('token');
+
     const response = await fetch(apiUrl, {
       method: "DELETE",
       headers: {
@@ -367,10 +357,13 @@ async function deleteImage(imageId) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    console.log("Réponse de l'API (Suppression) :", response.statusText);
+    // Retirez l'élément figure de la galerie côté client après la suppression côté serveur
+    figureElement.remove();
+
+    // Mettez à jour la galerie après la suppression
+    await updateGallery();
   } catch (error) {
-    console.error("Erreur lors de la demande DELETE :", error);
-    throw error; // Renvoie l'erreur pour la gestion dans la fonction appelante
+    console.error("Error deleting image:", error);
   }
 }
 
@@ -449,7 +442,7 @@ const modal = document.querySelector(".modal");
     });
   
     modal.appendChild(closeModalButton);
-   
+ 
     
 // Fonction appelée lorsque le bouton "Ajouter une photo" est cliqué
 async function handleAddPhotoButtonClick() {
