@@ -1,5 +1,7 @@
 let data = [];
+let allWorks = [];
 let modal = document.querySelector(".modal");
+
 function displayGalleryItems(data) {
   const galleryDiv = document.getElementById("gallery");
 
@@ -33,9 +35,6 @@ function displayGalleryItems(data) {
 // Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
  
-  // Récupère tous les travaux depuis la variable globale
-  const allWorks = window.allWorks || [];
-
   // Filtre les travaux en fonction de la catégorie
   const filteredWorks = (categoryId === 'all') ?
     allWorks :
@@ -56,8 +55,9 @@ async function fetchData() {
       console.log("La requête vers l'API a réussi. Statut :", response.status);
       console.log("Données récupérées de l'API :", data);
 
+      allWorks = data;  // Mettez à jour la variable globale allWorks avec les données
       displayGalleryItems(data);
- 
+
       // Mise à jour de l'affichage du bouton Login/Logout
       updateLoginLogoutButton();
     } else {
