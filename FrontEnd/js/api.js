@@ -1,6 +1,7 @@
 let data = [];
 let allWorks = [];
 let modal = document.querySelector(".modal");
+let deletionSuccessful = false;
 
 function displayGalleryItems(data) {
   const galleryDiv = document.getElementById("gallery");
@@ -240,10 +241,13 @@ function overlayClickHandler(event) {
 }
 
 // Déclaration de la fonction pour afficher ou masquer la modale
-function toggleModal() {
+async function toggleModal() {
   console.log("Toggle Modal");
   const modalContainer = document.querySelector(".modal-container");
   const overlay = document.querySelector(".overlay");
+
+  // Vérifie si la modale est active avant de la désactiver
+  const wasModalActive = modalContainer.classList.contains("active");
 
   // Inverse la classe pour afficher ou masquer la modale
   modalContainer.classList.toggle("active");
@@ -253,8 +257,18 @@ function toggleModal() {
     overlay.addEventListener("click", overlayClickHandler);
   } else {
     overlay.removeEventListener("click", overlayClickHandler);
+
+    // Si la modale était active et a été désactivée manuellement, et que la suppression a été réussie
+    if (wasModalActive && deletionSuccessful) {
+      // Rafraîchit la page principale après la suppression réussie
+      refreshPage();
+    }
+
+    // Réinitialise la variable de suppression réussie
+    deletionSuccessful = false;
   }
 }
+
 
 async function updateGallery() {
   const apiUrl = "http://localhost:5678/api/works";
@@ -291,6 +305,10 @@ async function updateGallery() {
   }
 }
 
+function refreshPage() {
+  location.reload(true); // Recharge la page en forçant le chargement depuis le serveur
+}
+
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
   const figureElement = event.target.closest("figure");
@@ -306,7 +324,6 @@ async function handleTrashIconClick(event) {
   }
 
   try {
-
     // Effectue la demande de suppression à l'API en utilisant imageId
     const apiUrl = `http://localhost:5678/api/works/${imageId}`;
     const token = localStorage.getItem('token');
@@ -328,10 +345,14 @@ async function handleTrashIconClick(event) {
 
     // Mise à jour de la galerie principale
     await updateGallery();
+
+    // Met à jour la variable pour indiquer que la suppression a été réussie
+    deletionSuccessful = true;
   } catch (error) {
     console.error("Error deleting image:", error);
   }
 }
+
 
   // Création des icônes de corbeille 
   function createTrashIcons(figures) {
