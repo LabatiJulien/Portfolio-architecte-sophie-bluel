@@ -26,7 +26,7 @@ function displayGalleryItems(filteredData) {
   const galleryDiv = document.getElementById("gallery");
 if (galleryDiv) {
     const fragment = document.createDocumentFragment();
-    const itemsToDisplay = filteredData || data; // Utilisez les données filtrées si disponibles, sinon utilisez toutes les données
+    const itemsToDisplay = filteredData || data; 
 
     itemsToDisplay.forEach(item => {
       const figureElement = document.createElement("figure");
@@ -49,14 +49,35 @@ if (galleryDiv) {
   }
 }
 
-// Déclaration de la fonction pour filtrer les travaux par catégorie
-function filterByCategory(categoryId) {
-  // Filtre les travaux en fonction de la catégorie
-  const filteredWorks = (categoryId === 'all') ?
-    data :
-    data.filter(work => work.categoryId === categoryId);
-  // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
-  displayGalleryItems(filteredWorks);
+function updateLoginLogoutButton() {
+  const token = localStorage.getItem('token');
+  const loginLink = document.querySelector("nav li a[href='login/login.html']");
+  const logoutButton = document.getElementById("logoutButton");
+
+  if (token) {
+   
+    // Utilisateur connecté
+    // Remplace le lien "Login" par le bouton "Logout"
+    if (loginLink && logoutButton) {
+      loginLink.replaceWith(logoutButton);
+    }
+   
+    // Mise à jour de la visibilité des filtres
+    updateFilterVisibility();
+
+    toggleEditModeBanner(true);
+  } else {
+   
+    // Utilisateur non connecté
+    // Remplace le bouton "Logout" par le lien "Login"
+    if (logoutButton && loginLink) {
+      logoutButton.replaceWith(loginLink);
+    }
+
+    updateFilterVisibility();
+
+    toggleEditModeBanner(false);
+  }
 }
 
 function toggleEditModeBanner(isEditMode) {
@@ -94,13 +115,8 @@ function toggleEditModeBanner(isEditMode) {
   }
 }
 
-// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
-function isLoggedIn() {
-  const token = localStorage.getItem('token');
-  return !!token; 
-}
-
 // Fonction pour mettre à jour la visibilité des filtres en fonction de la connexion
+
 function updateFilterVisibility() {
   const filtersContainer = document.getElementById("categoryButtons");
   if (filtersContainer) {
@@ -108,35 +124,20 @@ function updateFilterVisibility() {
   }
 }
 
-function updateLoginLogoutButton() {
+// Déclaration de la fonction pour filtrer les travaux par catégorie
+function filterByCategory(categoryId) {
+  // Filtre les travaux en fonction de la catégorie
+  const filteredWorks = (categoryId === 'all') ?
+    data :
+    data.filter(work => work.categoryId === categoryId);
+  // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
+  displayGalleryItems(filteredWorks);
+}
+
+// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
+function isLoggedIn() {
   const token = localStorage.getItem('token');
-  const loginLink = document.querySelector("nav li a[href='login/login.html']");
-  const logoutButton = document.getElementById("logoutButton");
-
-  if (token) {
-   
-    // Utilisateur connecté
-    // Remplace le lien "Login" par le bouton "Logout"
-    if (loginLink && logoutButton) {
-      loginLink.replaceWith(logoutButton);
-    }
-   
-    // Mise à jour de la visibilité des filtres
-    updateFilterVisibility();
-
-    toggleEditModeBanner(true);
-  } else {
-   
-    // Utilisateur non connecté
-    // Remplace le bouton "Logout" par le lien "Login"
-    if (logoutButton && loginLink) {
-      logoutButton.replaceWith(loginLink);
-    }
-
-    updateFilterVisibility();
-
-    toggleEditModeBanner(false);
-  }
+  return !!token; 
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -287,8 +288,8 @@ async function updateGallery() {
   }
 }
 
-// Fonction pour rafraîchir la page
-function refreshPage() {
+ // Fonction pour rafraîchir la page
+ function refreshPage() {
   location.reload(true); // Recharge la page en forçant le chargement depuis le serveur
 }
 
