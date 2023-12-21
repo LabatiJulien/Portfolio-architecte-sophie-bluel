@@ -1,16 +1,34 @@
 let data = [];
-let allWorks = [];
 let modal = document.querySelector(".modal");
 let deletionSuccessful = false;
 
-function displayGalleryItems(data) {
+async function fetchData() {
+  const apiUrl = "http://localhost:5678/api/works";
+  try {
+    const response = await fetch(apiUrl);
+
+    if (response.ok) {
+      data = await response.json();
+      console.log("La requête vers l'API a réussi. Statut :", response.status);
+      console.log("Données récupérées de l'API :", data);
+
+      displayGalleryItems();  // Affiche les éléments de la galerie directement avec les données récupérées
+      updateLoginLogoutButton();
+    } else {
+      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
+    }
+  } catch (error) {
+    console.error("Une erreur s'est produite lors de la requête :", error);
+  }
+}
+
+function displayGalleryItems(filteredData) {
   const galleryDiv = document.getElementById("gallery");
-
-  // Vérifie si l'élément "gallery" existe sur la page
-  if (galleryDiv) {
+if (galleryDiv) {
     const fragment = document.createDocumentFragment();
+    const itemsToDisplay = filteredData || data; // Utilisez les données filtrées si disponibles, sinon utilisez toutes les données
 
-    data.forEach(item => {
+    itemsToDisplay.forEach(item => {
       const figureElement = document.createElement("figure");
       figureElement.dataset.id = item.id;
 
@@ -26,56 +44,26 @@ function displayGalleryItems(data) {
 
       fragment.appendChild(figureElement);
     });
-
-    // Vide la galerie existante et ajoute les nouveaux éléments
-    galleryDiv.innerHTML = "";
+ galleryDiv.innerHTML = "";
     galleryDiv.appendChild(fragment);
   }
 }
 
 // Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
- 
   // Filtre les travaux en fonction de la catégorie
   const filteredWorks = (categoryId === 'all') ?
-    allWorks :
-    allWorks.filter(work => work.categoryId === categoryId);
-
+    data :
+    data.filter(work => work.categoryId === categoryId);
   // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
   displayGalleryItems(filteredWorks);
-}
-
-// Déclaration de la fonction asynchrone pour récupérer les données de l'API
-async function fetchData() {
-  const apiUrl = "http://localhost:5678/api/works";
-  try {
-    const response = await fetch(apiUrl);
-
-    if (response.ok) {
-      data = await response.json();
-      console.log("La requête vers l'API a réussi. Statut :", response.status);
-      console.log("Données récupérées de l'API :", data);
-
-      allWorks = data;  // Mettez à jour la variable globale allWorks avec les données
-      displayGalleryItems(data);
-
-      // Mise à jour de l'affichage du bouton Login/Logout
-      updateLoginLogoutButton();
-    } else {
-      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
-    }
-  } catch (error) {
-    console.error("Une erreur s'est produite lors de la requête :", error);
-  }
 }
 
 function toggleEditModeBanner(isEditMode) {
   const header = document.querySelector("header");
 
   if (header) {
-   
     if (isEditMode) {
-     
       // Crée la bande noire avec le texte "Mode édition"
       const editModeBanner = document.createElement("div");
       editModeBanner.className = "edit-mode-banner";
@@ -95,7 +83,6 @@ function toggleEditModeBanner(isEditMode) {
 
       header.classList.add("header-with-banner");
     } else {
-      
       // Supprime la bande noire et la classe du header
       const editModeBanner = document.querySelector(".edit-mode-banner");
       if (editModeBanner) {
@@ -117,7 +104,6 @@ function isLoggedIn() {
 function updateFilterVisibility() {
   const filtersContainer = document.getElementById("categoryButtons");
   if (filtersContainer) {
-    
     filtersContainer.classList.toggle("hidden", isLoggedIn());
   }
 }
@@ -160,11 +146,9 @@ document.addEventListener("DOMContentLoaded", async function () {
   const isIndexPage = window.location.pathname.includes("index.html");
 
   if (isIndexPage) {
-   
     // Vérifie si l'élément "gallery" existe sur la page
     const galleryDiv = document.getElementById("gallery");
     if (galleryDiv) {
-     
       // Vérifie si un token est présent dans le stockage local
       const token = localStorage.getItem('token');
 
@@ -197,8 +181,9 @@ document.addEventListener("DOMContentLoaded", async function () {
           filterByCategory(3);
         });
       }
-// Initialisation de la variable modal à l'intérieur de la fonction DOMContentLoaded
-modal = document.querySelector(".modal");
+
+      // Initialisation de la variable modal à l'intérieur de la fonction DOMContentLoaded
+      modal = document.querySelector(".modal");
 
       // Ajout de la modale
       const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
@@ -206,7 +191,7 @@ modal = document.querySelector(".modal");
       const galleryContent = document.getElementById("gallery");
 
       // Ajoute un gestionnaire d'événements persistant pour le clic sur l'overlay
-overlay.addEventListener("click", overlayClickHandler);
+      overlay.addEventListener("click", overlayClickHandler);
 
       const isUserLoggedIn = isLoggedIn();
 
@@ -231,7 +216,7 @@ overlay.addEventListener("click", overlayClickHandler);
           toggleModal();
         });
       }
-
+   
     // Déclaration de la fonction pour gérer le clic sur l'overlay
 function overlayClickHandler(event) {
   console.log("Overlay Clicked");
@@ -269,7 +254,6 @@ async function toggleModal() {
   }
 }
 
-
 async function updateGallery() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
@@ -281,8 +265,6 @@ async function updateGallery() {
 
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
-
-      window.allWorks = data;
 
       // Si la modale est ouverte, met à jour la galerie dans la modale également
       if (modal.classList.contains("active")) {
@@ -305,6 +287,7 @@ async function updateGallery() {
   }
 }
 
+// Fonction pour rafraîchir la page
 function refreshPage() {
   location.reload(true); // Recharge la page en forçant le chargement depuis le serveur
 }
@@ -340,7 +323,7 @@ async function handleTrashIconClick(event) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // Supprimer l'élément du DOM côté client
+    // Supprime l'élément du DOM côté client
     figureElement.remove();
 
     // Mise à jour de la galerie principale
@@ -353,108 +336,107 @@ async function handleTrashIconClick(event) {
   }
 }
 
+// Création des icônes de corbeille 
+function createTrashIcons(figures) {
+  figures.forEach(figure => {
+    figure.removeChild(figure.querySelector("figcaption"));
 
-  // Création des icônes de corbeille 
-  function createTrashIcons(figures) {
-    figures.forEach(figure => {
-      figure.removeChild(figure.querySelector("figcaption"));
-  
-      const trashIcon = document.createElement("i");
-      trashIcon.className = "fa-regular fa-trash-can";
-      trashIcon.addEventListener("click", handleTrashIconClick);
-  
-      const iconContainer = document.createElement("div");
-      iconContainer.className = "icon-container";
-      iconContainer.style.position = "absolute";
-      iconContainer.style.top = "10px";
-      iconContainer.style.right = "5px";
-      iconContainer.style.padding = "5px";
-      iconContainer.style.backgroundColor = "#000";  // Fond noir
-  
-      trashIcon.style.color = "#fff"; 
-  
-      iconContainer.appendChild(trashIcon);
-  
-      figure.style.position = "relative";
-      figure.appendChild(iconContainer);
-    });
-  }
+    const trashIcon = document.createElement("i");
+    trashIcon.className = "fa-regular fa-trash-can";
+    trashIcon.addEventListener("click", handleTrashIconClick);
 
-  function displayGalleryContent() {
-    console.log("Display Gallery Content Clicked");
-    
-    // Efface le contenu existant de la modale
-    modal.innerHTML = "";
-  
-    // Crée un conteneur pour le contenu de la modale
-    const modalContent = document.createElement("div");
-  
-    // Ajoute le titre h1 à la modale
-    const title = document.createElement("h1");
-    title.textContent = "Galerie photo";
-    modalContent.appendChild(title);
-  
-  // Clone le contenu de la galerie et l'ajoute au conteneur de la modale
+    const iconContainer = document.createElement("div");
+    iconContainer.className = "icon-container";
+    iconContainer.style.position = "absolute";
+    iconContainer.style.top = "10px";
+    iconContainer.style.right = "5px";
+    iconContainer.style.padding = "5px";
+    iconContainer.style.backgroundColor = "#000";  // Fond noir
+
+    trashIcon.style.color = "#fff"; 
+
+    iconContainer.appendChild(trashIcon);
+
+    figure.style.position = "relative";
+    figure.appendChild(iconContainer);
+  });
+}
+
+  // Function to display gallery content
+function displayGalleryContent() {
+  console.log("Display Gallery Content Clicked");
+
+  // Clear existing content in the modal
+  modal.innerHTML = "";
+
+  // Create a container for the modal content
+  const modalContent = document.createElement("div");
+
+  // Add the h1 title to the modal
+  const title = document.createElement("h1");
+  title.textContent = "Galerie photo";
+  modalContent.appendChild(title);
+
+  // Clone the gallery content and append it to the modal container
   const galleryClone = galleryContent.cloneNode(true);
   galleryClone.classList.add("modal-gallery");
 
   modalContent.appendChild(galleryClone);
-  
-  // Appelle la fonction pour créer les icônes de corbeille
+
+  // Call the function to create trash icons
   createTrashIcons(galleryClone.querySelectorAll("figure"));
 
-    // Ajoute le bouton "Ajouter une photo" à la modale
-    const addButton = document.createElement("button");
-    addButton.id = "boutonAjoutdePhoto";
-    addButton.className = "modal-button";
-    addButton.textContent = "Ajouter une photo";
-    modalContent.appendChild(addButton);
-  
-    // Attache un gestionnaire d'événements au bouton "Ajouter une photo"
+  // Add the "Ajouter une photo" button to the modal
+  const addButton = document.createElement("button");
+  addButton.id = "boutonAjoutdePhoto";
+  addButton.className = "modal-button";
+  addButton.textContent = "Ajouter une photo";
+  modalContent.appendChild(addButton);
+
+  // Attach an event handler to the "Ajouter une photo" button
   addButton.addEventListener("click", handleAddPhotoButtonClick);
-    
-    modal.appendChild(modalContent);
-  
-    // Ajoute un gestionnaire d'événements pour fermer la modale
-    const closeModalButton = document.createElement("button");
-    closeModalButton.className = "close-modal modal-trigger";
-    closeModalButton.textContent = "X";
-    closeModalButton.addEventListener("click", function () {
-      console.log("Close Modal Clicked");
-      toggleModal();
-    });
-  
-    modal.appendChild(closeModalButton);
- 
+
+  modal.appendChild(modalContent);
+
+  // Add an event handler to close the modal
+  const closeModalButton = document.createElement("button");
+  closeModalButton.className = "close-modal modal-trigger";
+  closeModalButton.textContent = "X";
+  closeModalButton.addEventListener("click", function () {
+    console.log("Close Modal Clicked");
+    toggleModal();
+  });
+
+  modal.appendChild(closeModalButton);
+}
+
+// Event handler for the "Ajouter une photo" button click
 async function handleAddPhotoButtonClick() {
- 
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
   const modalContent = modal.querySelector("div");
 
- // Remplace le contenu existant par celui de la nouvelle modale
- modalContent.innerHTML = `
-  
-  <div id="container">
-  <i class="fa-solid fa-arrow-left" id="backButton"></i>
-  <h2 class="form-title">Ajout de photo</h2>
-      
-  <form id="addPhotoForm">
-  
-  <div id="fileSectionContainer">
-  <div id="preview">
-  <i class="fa-regular fa-image" id="defaultImage"></i>
-</div>
+  // Replace the existing content with the new modal content
+  modalContent.innerHTML = `
+    <div id="container">
+      <i class="fa-solid fa-arrow-left" id="backButton"></i>
+      <h2 class="form-title">Ajout de photo</h2>
 
-        
-        <label for="fileInput" id="customFileLabel">+ Ajouter une photo</label>
-            <input type="file" id="fileInput" accept="image/jpeg, image/png" onchange="previewImage(event)" required>
-            
-            <!-- Aperçu de la photo sélectionnée -->
-        <img id="photoPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
-        <div id="fileInfo">jpg, png : 4 Mo max</div>
+      <form id="addPhotoForm">
+
+        <div id="fileSectionContainer">
+          <div id="preview">
+            <i class="fa-regular fa-image" id="defaultImage"></i>
+          </div>
+
+          <label for="fileInput" id="customFileLabel">+ Ajouter une photo</label>
+          <input type="file" id="fileInput" accept="image/jpeg, image/png" onchange="previewImage(event)" required>
+
+          <!-- Aperçu de la photo sélectionnée -->
+          <img id="photoPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+          <div id="fileInfo">jpg, png : 4 Mo max</div>
         </div>
-       
+
         <h2 class="form-category">Titre de la photo:</h2>
         <input type="text" id="photoTitle" name="photoTitle" required>
 
@@ -465,6 +447,7 @@ async function handleAddPhotoButtonClick() {
           <option value="2">Appartements</option>
           <option value="3">Hotels & restaurants</option>
         </select>
+
         <hr>
         <button class="new-modal-button" type="submit">Valider</button>
       </form>
@@ -473,64 +456,65 @@ async function handleAddPhotoButtonClick() {
     <button class="close-new-modal">X</button>
   `;
 
+  // Dynamically add the script for the previewImage function
   const scriptElement = document.createElement("script");
-scriptElement.text = `
-  function previewImage(event) {
-    var input = event.target;
-    var preview = document.getElementById('photoPreview');
-    var fileInput = document.getElementById('fileInput');
-    var defaultImage = document.getElementById('defaultImage');
-    var customFileLabel = document.getElementById('customFileLabel');
+  scriptElement.text = `
+    function previewImage(event) {
+      var input = event.target;
+      var preview = document.getElementById('photoPreview');
+      var fileInput = document.getElementById('fileInput');
+      var defaultImage = document.getElementById('defaultImage');
+      var customFileLabel = document.getElementById('customFileLabel');
 
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
 
-      reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        defaultImage.style.display = 'none';
-        customFileLabel.style.display = 'none';
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          defaultImage.style.display = 'none';
+          customFileLabel.style.display = 'none';
 
-        // Ajouter des styles pour centrer l'image de preview
-        preview.style.margin = 'auto';
-        preview.style.display = 'block';
-      };
+          // Add styles to center the preview image
+          preview.style.margin = 'auto';
+          preview.style.display = 'block';
+        };
 
-      reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(input.files[0]);
 
-      // Désactiver l'élément fileInput après la sélection d'une image
-      fileInput.disabled = true;
-    } else {
-      preview.src = '';
-      preview.style.display = 'none';
-      defaultImage.style.display = 'block';
-      customFileLabel.style.display = 'block';
+        // Disable the fileInput element after selecting an image
+        fileInput.disabled = true;
+      } else {
+        preview.src = '';
+        preview.style.display = 'none';
+        defaultImage.style.display = 'block';
+        customFileLabel.style.display = 'block';
 
-      // Activer l'élément fileInput si aucune image est sélectionnée
-      fileInput.disabled = false;
+        // Enable the fileInput element if no image is selected
+        fileInput.disabled = false;
+      }
     }
-  }
-`;
-document.head.appendChild(scriptElement);
+  `;
+  document.head.appendChild(scriptElement);
 
   const closeNewModalButton = modalContent.querySelector(".close-new-modal");
   if (closeNewModalButton) {
     closeNewModalButton.addEventListener("click", function () {
-      
+      // Handle close-new-modal button click if needed
     });
 
-   // Ajout un gestionnaire d'événements à l'icône de flèche gauche
-const backButton = modalContent.querySelector("#backButton");
-if (backButton) {
-  backButton.addEventListener("click", function () {
-  
+    // Add an event handler to the arrow-left icon
+    const backButton = modalContent.querySelector("#backButton");
+    if (backButton) {
+      backButton.addEventListener("click", function () {
+    console.log("Bouton de retour cliqué !");
     console.log("Bouton de retour cliqué !");
     
-    displayGalleryContent();
-  });
-}
-
-  }
+        console.log("Bouton de retour cliqué !");
+    
+        displayGalleryContent();
+      });
+    }
 
   // Ajoute un gestionnaire d'événements au formulaire
   const addPhotoForm = modalContent.querySelector("#addPhotoForm");
@@ -574,30 +558,34 @@ if (backButton) {
   }
   
       if (token) {
-        // Utilisateur connecté
-        fetchData();
+  // Utilisateur connecté
+  fetchData();
 
-        // Ajoute dynamiquement un bouton de déconnexion
-        const logoutButton = document.createElement("button");
-        logoutButton.id = "logoutButton";
-        logoutButton.textContent = "Logout";
-        logoutButton.addEventListener("click", function () {
-         
+  // Ajoute dynamiquement un bouton de déconnexion
+  const logoutButton = document.createElement("button");
+  logoutButton.id = "logoutButton";
+  logoutButton.textContent = "Logout";
+  logoutButton.addEventListener("click", function () {
+          localStorage.removeItem('token');
           localStorage.removeItem('token');
          
-          window.location.href = "/login/login.html";
-        });
+    localStorage.removeItem('token');
+         
+    window.location.href = "/login/login.html";
+  });
 
-        const header = document.querySelector("header");
-        if (header) {
-          header.appendChild(logoutButton);
-        }
-      } else {
-        
+  const header = document.querySelector("header");
+  if (header) {
+    header.appendChild(logoutButton);
+  }
+} else {
+        console.log("L'utilisateur n'est pas connecté.");
         console.log("L'utilisateur n'est pas connecté.");
 
-        fetchData();
-      }
+  console.log("L'utilisateur n'est pas connecté.");
+
+  fetchData();
+}
     }
   }
 });
