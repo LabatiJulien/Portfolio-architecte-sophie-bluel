@@ -150,6 +150,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Vérifie si l'élément "gallery" existe sur la page
     const galleryDiv = document.getElementById("gallery");
     if (galleryDiv) {
+      
+      // Appel de la fonction fetchData au chargement de la page
+       fetchData();
       // Vérifie si un token est présent dans le stockage local
       const token = localStorage.getItem('token');
 
@@ -584,8 +587,6 @@ async function handleAddPhotoButtonClick() {
         console.log("L'utilisateur n'est pas connecté.");
 
   console.log("L'utilisateur n'est pas connecté.");
-
-  fetchData();
 }
     }
   }
