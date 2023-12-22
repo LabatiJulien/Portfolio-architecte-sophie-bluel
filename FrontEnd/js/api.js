@@ -264,7 +264,7 @@ async function toggleModal() {
   }
 }
 
-async function updateGallery() {
+async function updateGallery(deletionSuccessful = false){
   const apiUrl = "http://localhost:5678/api/works";
   try {
     const response = await fetch(apiUrl);
@@ -292,8 +292,15 @@ async function updateGallery() {
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
     }
+
+    // Mettez à jour la variable pour indiquer que la suppression a été réussie
+    deletionSuccessful = true;
+
   } catch (error) {
     console.error("Une erreur s'est produite lors de la requête :", error);
+
+    // Mettez à jour la variable pour indiquer que la suppression a échoué
+    deletionSuccessful = false;
   }
 }
 
@@ -332,12 +339,10 @@ async function handleTrashIconClick(event) {
     figureElement.remove();
 
     // Mise à jour de la galerie principale
-    await updateGallery();
-
-    // Met à jour la variable pour indiquer que la suppression a été réussie
-    deletionSuccessful = true;
+    await updateGallery(true); // Passer true pour indiquer que la suppression a été réussie
   } catch (error) {
     console.error("Error deleting image:", error);
+    await updateGallery(false); // Passer false pour indiquer que la suppression a échoué
   }
 }
 
