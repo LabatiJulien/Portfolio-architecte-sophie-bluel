@@ -504,10 +504,9 @@ async function handleAddPhotoButtonClick() {
   const closeNewModalButton = modalContent.querySelector(".close-new-modal");
   if (closeNewModalButton) {
     closeNewModalButton.addEventListener("click", function () {
-      // Handle close-new-modal button click if needed
+      
     });
 
-    // Add an event handler to the arrow-left icon
     const backButton = modalContent.querySelector("#backButton");
     if (backButton) {
       backButton.addEventListener("click", function () {
@@ -548,12 +547,11 @@ async function handleAddPhotoButtonClick() {
         
           await updateGallery();
         
-          // Ferme la modale après l'ajout de la photo
-          await toggleModal();
-        } catch (error) {
-          console.error("Erreur lors de la demande POST :", error);
-         
-}   
+          // Revenir à la modale après l'ajout de la photo
+        displayGalleryContent();
+      } catch (error) {
+        console.error("Erreur lors de la demande POST :", error);
+      }
     });
   }
 
