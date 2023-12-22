@@ -24,30 +24,47 @@ async function fetchData() {
 
 function displayGalleryItems(filteredData) {
   const galleryDiv = document.getElementById("gallery");
-if (galleryDiv) {
-    const fragment = document.createDocumentFragment();
-    const itemsToDisplay = filteredData || data; 
 
-    itemsToDisplay.forEach(item => {
-      const figureElement = document.createElement("figure");
-      figureElement.dataset.id = item.id;
+  if (!galleryDiv) {
+    return; // Arrêtez l'exécution si l'élément de la galerie n'est pas trouvé
+  }
 
-      const imgElement = document.createElement("img");
-      imgElement.src = item.imageUrl;
-      imgElement.alt = item.title;
+  const fragment = document.createDocumentFragment();
+  const itemsToDisplay = filteredData || data;
 
-      const figcaptionElement = document.createElement("figcaption");
-      figcaptionElement.textContent = item.title;
+  itemsToDisplay.forEach(item => {
+    const figureElement = createFigureElement(item);
+    fragment.appendChild(figureElement);
+  });
 
-      figureElement.appendChild(imgElement);
-      figureElement.appendChild(figcaptionElement);
+  clearGalleryDiv(galleryDiv);
+  galleryDiv.appendChild(fragment);
+}
 
-      fragment.appendChild(figureElement);
-    });
- galleryDiv.innerHTML = "";
-    galleryDiv.appendChild(fragment);
+function createFigureElement(item) {
+  const figureElement = document.createElement("figure");
+  figureElement.dataset.id = item.id;
+
+  const imgElement = document.createElement("img");
+  imgElement.src = item.imageUrl;
+  imgElement.alt = item.title;
+
+  const figcaptionElement = document.createElement("figcaption");
+  figcaptionElement.textContent = item.title;
+
+  figureElement.appendChild(imgElement);
+  figureElement.appendChild(figcaptionElement);
+
+  return figureElement;
+}
+
+function clearGalleryDiv(galleryDiv) {
+  // Supprime tous les enfants de la galerie
+  while (galleryDiv.firstChild) {
+    galleryDiv.removeChild(galleryDiv.firstChild);
   }
 }
+
 
 function updateLoginLogoutButton() {
   const token = localStorage.getItem('token');
