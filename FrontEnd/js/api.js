@@ -30,7 +30,7 @@ function displayGalleryItems(filteredData) {
   }
 
   const fragment = document.createDocumentFragment();
-  const itemsToDisplay = filteredData || data;
+  const itemsToDisplay = (filteredData !== undefined) ? filteredData : data;
 
   itemsToDisplay.forEach(item => {
     const figureElement = createFigureElement(item);
