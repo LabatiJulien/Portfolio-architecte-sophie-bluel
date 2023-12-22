@@ -244,17 +244,6 @@ async function toggleModal() {
   // Ajoute ou supprime le gestionnaire d'événements sur l'overlay
   if (modalContainer.classList.contains("active")) {
     overlay.addEventListener("click", overlayClickHandler);
-  } else {
-    overlay.removeEventListener("click", overlayClickHandler);
-
-    // Si la modale était active et a été désactivée manuellement, et que la suppression a été réussie
-    if (wasModalActive && deletionSuccessful) {
-      // Rafraîchit la page principale après la suppression réussie
-      refreshPage();
-    }
-
-    // Réinitialise la variable de suppression réussie
-    deletionSuccessful = false;
   }
 }
 
@@ -289,11 +278,6 @@ async function updateGallery() {
   } catch (error) {
     console.error("Une erreur s'est produite lors de la requête :", error);
   }
-}
-
- // Fonction pour rafraîchir la page
- function refreshPage() {
-  location.reload(true); // Recharge la page en forçant le chargement depuis le serveur
 }
 
 // Gestionnaire d'événements pour l'icône de la corbeille
@@ -560,9 +544,7 @@ async function handleAddPhotoButtonClick() {
   }
   
       if (token) {
-  // Utilisateur connecté
-  fetchData();
-
+ 
   // Ajoute dynamiquement un bouton de déconnexion
   const logoutButton = document.createElement("button");
   logoutButton.id = "logoutButton";
