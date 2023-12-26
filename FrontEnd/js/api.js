@@ -46,6 +46,7 @@ function displayGalleryItems() {
 
   clearGalleryDiv(galleryDiv);
   galleryDiv.appendChild(fragment);
+  console.log("Gallery items displayed successfully.");
 }
 
 function removeFigcaption(figure) {
@@ -276,7 +277,7 @@ async function updateGallery(){
 
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
-
+      console.log("Gallery updated successfully.");
       // Création des icônes de corbeille pour les nouvelles figures de la modale
       const modalGalleryClone = modal.querySelector(".modal-gallery");
       if (modalGalleryClone) {
@@ -299,7 +300,6 @@ async function updateGallery(){
 
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
-  console.log("handleTrashIconClick called");
   const figureElement = event.target.closest("figure");
   if (!figureElement) {
     console.error("Figure element not found.");
@@ -330,17 +330,11 @@ async function handleTrashIconClick(event) {
     }
 
     // Supprime l'élément du DOM côté client
+    console.log("Element removed from DOM:", figureElement); // Ajout du console.log
     figureElement.remove();
 
-    // Efface la galerie pour refléter la suppression dynamique
-    const galleryDiv = document.getElementById("gallery");
-    clearGalleryDiv(galleryDiv);
-
-    // Mise à jour de la galerie principale
-    await updateGallery(true); // Passer true pour indiquer que la suppression a été réussie
   } catch (error) {
     console.error("Error deleting image:", error);
-    await updateGallery(false); // Passer false pour indiquer que la suppression a échoué
   }
 }
 
