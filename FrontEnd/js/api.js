@@ -12,7 +12,7 @@ async function fetchData() {
       console.log("La requête vers l'API a réussi. Statut :", response.status);
       console.log("Données récupérées de l'API :", data);
 
-      displayGalleryItems();  // Affiche les éléments de la galerie directement avec les données récupérées
+      displayGalleryItems(); 
       updateLoginLogoutButton();
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
@@ -338,6 +338,10 @@ async function handleTrashIconClick(event) {
 
     // Supprime l'élément du DOM côté client
     figureElement.remove();
+
+    // Efface la galerie pour refléter la suppression dynamique
+    const galleryDiv = document.getElementById("gallery");
+    clearGalleryDiv(galleryDiv);
 
     // Mise à jour de la galerie principale
     await updateGallery(true); // Passer true pour indiquer que la suppression a été réussie
