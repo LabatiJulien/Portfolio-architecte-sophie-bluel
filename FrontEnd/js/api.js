@@ -33,20 +33,23 @@ function displayGalleryItems() {
   const galleryDiv = document.getElementById("gallery");
 
   if (!galleryDiv) {
-    return; // Arrêtez l'exécution si l'élément de la galerie n'est pas trouvé
+    return;
   }
 
   const fragment = document.createDocumentFragment();
-  const itemsToDisplay = data;  // Utilise toujours les données globales data
+  const itemsToDisplay = data;
 
   itemsToDisplay.forEach(item => {
     const figureElement = createFigureElement(item);
-    fragment.appendChild(figureElement);
+
+    // Ajoutez une vérification avant d'ajouter l'élément
+    if (!galleryDiv.contains(figureElement)) {
+      fragment.appendChild(figureElement);
+    }
   });
 
   clearGalleryDiv(galleryDiv);
   galleryDiv.appendChild(fragment);
-  console.log("Gallery items displayed successfully.");
 }
 
 function removeFigcaption(figure) {
@@ -254,9 +257,6 @@ async function toggleModal() {
   const modalContainer = document.querySelector(".modal-container");
   const overlay = document.querySelector(".overlay");
 
-  // Vérifie si la modale est active avant de la désactiver
-  const wasModalActive = modalContainer.classList.contains("active");
-
   // Inverse la classe pour afficher ou masquer la modale
   modalContainer.classList.toggle("active");
 
@@ -266,7 +266,7 @@ async function toggleModal() {
   }
 }
 
-async function updateGallery(){
+async function updateGallery() {
   const apiUrl = "http://localhost:5678/api/works";
   try {
     const response = await fetch(apiUrl);
@@ -275,9 +275,12 @@ async function updateGallery(){
       data = await response.json();
       console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
 
+      const galleryDiv = document.getElementById("gallery");
+      console.log("Number of items in gallery before clearing:", galleryDiv.childElementCount);
+
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
-      console.log("Gallery updated successfully.");
+
       // Création des icônes de corbeille pour les nouvelles figures de la modale
       const modalGalleryClone = modal.querySelector(".modal-gallery");
       if (modalGalleryClone) {
@@ -296,11 +299,16 @@ async function updateGallery(){
     // Mettez à jour la variable pour indiquer que la suppression a échoué
     deletionSuccessful = false;
   }
+  console.log("Number of items in gallery after displayGalleryItems:", galleryDiv.childElementCount);
+  console.log("Gallery updated successfully.");
 }
+
 
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
-  const figureElement = event.target.closest("figure");
+  console.log("handleTrashIconClick called");
+ 
+  const figureElement = event.currentTarget.closest("figure");
   if (!figureElement) {
     console.error("Figure element not found.");
     return;
@@ -330,7 +338,12 @@ async function handleTrashIconClick(event) {
     }
 
     // Supprime l'élément du DOM côté client
-    console.log("Element removed from DOM:", figureElement); // Ajout du console.log
+    console.log("Element removed from DOM:", figureElement); 
+    // Ajoute le log pour l'élément supprimé
+    console.log("Element removed from Gallery:", {
+      id: imageId,
+    });
+
     figureElement.remove();
 
   } catch (error) {
