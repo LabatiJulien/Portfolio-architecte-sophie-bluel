@@ -29,7 +29,7 @@ function clearGalleryDiv(galleryDiv) {
   }
 }
 
-function displayGalleryItems(filteredData) {
+function displayGalleryItems() {
   const galleryDiv = document.getElementById("gallery");
 
   if (!galleryDiv) {
@@ -37,7 +37,7 @@ function displayGalleryItems(filteredData) {
   }
 
   const fragment = document.createDocumentFragment();
-  const itemsToDisplay = (filteredData !== undefined) ? filteredData : data;
+  const itemsToDisplay = data;  // Utilise toujours les données globales data
 
   itemsToDisplay.forEach(item => {
     const figureElement = createFigureElement(item);
@@ -265,7 +265,7 @@ async function toggleModal() {
   }
 }
 
-async function updateGallery(deletionSuccessful = false){
+async function updateGallery(){
   const apiUrl = "http://localhost:5678/api/works";
   try {
     const response = await fetch(apiUrl);
@@ -276,14 +276,6 @@ async function updateGallery(deletionSuccessful = false){
 
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
-
-      // Si la modale est ouverte, met à jour la galerie dans la modale également
-      if (modal.classList.contains("active")) {
-        const modalGallery = modal.querySelector(".modal-gallery");
-        createTrashIcons(modalGallery.querySelectorAll("figure"));
-      }
-
-      console.log("Mise à jour de la galerie terminée");
 
       // Création des icônes de corbeille pour les nouvelles figures de la modale
       const modalGalleryClone = modal.querySelector(".modal-gallery");
@@ -307,6 +299,7 @@ async function updateGallery(deletionSuccessful = false){
 
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
+  console.log("handleTrashIconClick called");
   const figureElement = event.target.closest("figure");
   if (!figureElement) {
     console.error("Figure element not found.");
