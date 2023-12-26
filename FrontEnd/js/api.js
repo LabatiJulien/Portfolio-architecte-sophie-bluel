@@ -22,6 +22,13 @@ async function fetchData() {
   }
 }
 
+function clearGalleryDiv(galleryDiv) {
+  // Supprime tous les enfants de la galerie
+  while (galleryDiv.firstChild) {
+    galleryDiv.removeChild(galleryDiv.firstChild);
+  }
+}
+
 function displayGalleryItems(filteredData) {
   const galleryDiv = document.getElementById("gallery");
 
@@ -41,6 +48,12 @@ function displayGalleryItems(filteredData) {
   galleryDiv.appendChild(fragment);
 }
 
+function removeFigcaption(figure) {
+  if (figure && figure.querySelector("figcaption")) {
+    figure.removeChild(figure.querySelector("figcaption"));
+  }
+}
+
 function createFigureElement(item) {
   const figureElement = document.createElement("figure");
   figureElement.dataset.id = item.id;
@@ -49,22 +62,10 @@ function createFigureElement(item) {
   imgElement.src = item.imageUrl;
   imgElement.alt = item.title;
 
-  const figcaptionElement = document.createElement("figcaption");
-  figcaptionElement.textContent = item.title;
-
   figureElement.appendChild(imgElement);
-  figureElement.appendChild(figcaptionElement);
 
   return figureElement;
 }
-
-function clearGalleryDiv(galleryDiv) {
-  // Supprime tous les enfants de la galerie
-  while (galleryDiv.firstChild) {
-    galleryDiv.removeChild(galleryDiv.firstChild);
-  }
-}
-
 
 function updateLoginLogoutButton() {
   const token = localStorage.getItem('token');
@@ -349,7 +350,7 @@ async function handleTrashIconClick(event) {
 // Création des icônes de corbeille 
 function createTrashIcons(figures) {
   figures.forEach(figure => {
-    figure.removeChild(figure.querySelector("figcaption"));
+    removeFigcaption(figure);
 
     const trashIcon = document.createElement("i");
     trashIcon.className = "fa-regular fa-trash-can";
@@ -416,7 +417,8 @@ function displayGalleryContent() {
     console.log("Close Modal Clicked");
     toggleModal();
   });
-
+  // Call the function to remove figcaptions
+  createTrashIcons(galleryClone.querySelectorAll("figure"));
   modal.appendChild(closeModalButton);
 }
 
@@ -514,16 +516,12 @@ async function handleAddPhotoButtonClick() {
     });
 
     const backButton = modalContent.querySelector("#backButton");
-    if (backButton) {
-      backButton.addEventListener("click", function () {
+if (backButton) {
+  backButton.addEventListener("click", function () {
     console.log("Bouton de retour cliqué !");
-    console.log("Bouton de retour cliqué !");
-    
-        console.log("Bouton de retour cliqué !");
-    
-        displayGalleryContent();
-      });
-    }
+    displayGalleryContent();
+  });
+}
 
   // Ajoute un gestionnaire d'événements au formulaire
   const addPhotoForm = modalContent.querySelector("#addPhotoForm");
@@ -567,28 +565,19 @@ async function handleAddPhotoButtonClick() {
   
       if (token) {
  
-  // Ajoute dynamiquement un bouton de déconnexion
-  const logoutButton = document.createElement("button");
-  logoutButton.id = "logoutButton";
-  logoutButton.textContent = "Logout";
-  logoutButton.addEventListener("click", function () {
-          localStorage.removeItem('token');
-          localStorage.removeItem('token');
-         
-    localStorage.removeItem('token');
-         
-    window.location.href = "/login/login.html";
-  });
+ // Ajoute dynamiquement un bouton de déconnexion
+ const logoutButton = document.createElement("button");
+ logoutButton.id = "logoutButton";
+ logoutButton.textContent = "Logout";
+ logoutButton.addEventListener("click", function () {
+   localStorage.removeItem('token');
+   window.location.href = "/login/login.html";
+ });
 
-  const header = document.querySelector("header");
-  if (header) {
-    header.appendChild(logoutButton);
-  }
-} else {
-        console.log("L'utilisateur n'est pas connecté.");
-        console.log("L'utilisateur n'est pas connecté.");
-
-  console.log("L'utilisateur n'est pas connecté.");
+ const header = document.querySelector("header");
+ if (header) {
+   header.appendChild(logoutButton);
+ }
 }
     }
   }
