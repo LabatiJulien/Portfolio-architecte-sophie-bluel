@@ -29,23 +29,19 @@ function clearGalleryDiv(galleryDiv) {
   }
 }
 
-function displayGalleryItems() {
+function displayGalleryItems(filteredData) {
   const galleryDiv = document.getElementById("gallery");
 
   if (!galleryDiv) {
-    return;
+    return; // Arrêtez l'exécution si l'élément de la galerie n'est pas trouvé
   }
 
   const fragment = document.createDocumentFragment();
-  const itemsToDisplay = data;
+  const itemsToDisplay = (filteredData !== undefined) ? filteredData : data;
 
   itemsToDisplay.forEach(item => {
     const figureElement = createFigureElement(item);
-
-    // Ajoutez une vérification avant d'ajouter l'élément
-    if (!galleryDiv.contains(figureElement)) {
-      fragment.appendChild(figureElement);
-    }
+    fragment.appendChild(figureElement);
   });
 
   clearGalleryDiv(galleryDiv);
@@ -257,6 +253,9 @@ async function toggleModal() {
   const modalContainer = document.querySelector(".modal-container");
   const overlay = document.querySelector(".overlay");
 
+  // Vérifie si la modale est active avant de la désactiver
+  const wasModalActive = modalContainer.classList.contains("active");
+
   // Inverse la classe pour afficher ou masquer la modale
   modalContainer.classList.toggle("active");
 
@@ -266,7 +265,7 @@ async function toggleModal() {
   }
 }
 
-async function updateGallery() {
+async function updateGallery(deletionSuccessful = false){
   const apiUrl = "http://localhost:5678/api/works";
   try {
     const response = await fetch(apiUrl);
@@ -275,40 +274,21 @@ async function updateGallery() {
       data = await response.json();
       console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
 
-      const galleryDiv = document.getElementById("gallery");
-      console.log("Number of items in gallery before clearing:", galleryDiv.childElementCount);
-
       // Appel de la fonction pour afficher dynamiquement les travaux
       displayGalleryItems(data);
 
+      // Si la modale est ouverte, met à jour la galerie dans la modale également
+      if (modal.classList.contains("active")) {
+        const modalGallery = modal.querySelector(".modal-gallery");
+        createTrashIcons(modalGallery.querySelectorAll("figure"));
+      }
+
+      console.log("Mise à jour de la galerie terminée");
+
       // Création des icônes de corbeille pour les nouvelles figures de la modale
-      const modalFigureClone = modal.querySelector(".modal-gallery");
-      if (modalFigureClone) {
-        // Ajouter les icônes de corbeille directement dans la galerie modale
-        modalFigureClone.querySelectorAll("figure").forEach((figure, index) => {
-          const trashIcon = document.createElement("i");
-          trashIcon.className = "fa-regular fa-trash-can";
-          trashIcon.addEventListener("click", handleTrashIconClick);
-
-          const iconContainer = document.createElement("div");
-          iconContainer.className = "icon-container";
-          iconContainer.style.position = "absolute";
-          iconContainer.style.top = "10px";
-          iconContainer.style.right = "5px";
-          iconContainer.style.padding = "5px";
-          iconContainer.style.backgroundColor = "#000";  // Fond noir
-          trashIcon.style.color = "#fff";
-
-          iconContainer.appendChild(trashIcon);
-
-          figure.style.position = "relative";
-          figure.appendChild(iconContainer);
-
-          // Ajouter une marge droite (8px) à toutes les images sauf la dernière
-          if (index < modalFigureClone.childElementCount - 1) {
-            figure.style.marginRight = "8px";
-          }
-        });
+      const modalGalleryClone = modal.querySelector(".modal-gallery");
+      if (modalGalleryClone) {
+        createTrashIcons(modalGalleryClone.querySelectorAll("figure"));
       }
     } else {
       console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
@@ -323,15 +303,11 @@ async function updateGallery() {
     // Mettez à jour la variable pour indiquer que la suppression a échoué
     deletionSuccessful = false;
   }
-  console.log("Number of items in gallery after displayGalleryItems:", galleryDiv.childElementCount);
-  console.log("Gallery updated successfully.");
 }
 
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
-  console.log("handleTrashIconClick called");
- 
-  const figureElement = event.currentTarget.closest("figure");
+  const figureElement = event.target.closest("figure");
   if (!figureElement) {
     console.error("Figure element not found.");
     return;
@@ -361,19 +337,47 @@ async function handleTrashIconClick(event) {
     }
 
     // Supprime l'élément du DOM côté client
-    console.log("Element removed from DOM:", figureElement); 
-    // Ajoute le log pour l'élément supprimé
-    console.log("Element removed from Gallery:", {
-      id: imageId,
-    });
-
     figureElement.remove();
 
+    // Efface la galerie pour refléter la suppression dynamique
+    const galleryDiv = document.getElementById("gallery");
+    clearGalleryDiv(galleryDiv);
+
+    // Mise à jour de la galerie principale
+    await updateGallery(true); // Passer true pour indiquer que la suppression a été réussie
   } catch (error) {
     console.error("Error deleting image:", error);
+    await updateGallery(false); // Passer false pour indiquer que la suppression a échoué
   }
 }
 
+// Création des icônes de corbeille 
+function createTrashIcons(figures) {
+  figures.forEach(figure => {
+    removeFigcaption(figure);
+
+    const trashIcon = document.createElement("i");
+    trashIcon.className = "fa-regular fa-trash-can";
+    trashIcon.addEventListener("click", handleTrashIconClick);
+
+    const iconContainer = document.createElement("div");
+    iconContainer.className = "icon-container";
+    iconContainer.style.position = "absolute";
+    iconContainer.style.top = "10px";
+    iconContainer.style.right = "5px";
+    iconContainer.style.padding = "5px";
+    iconContainer.style.backgroundColor = "#000";  // Fond noir
+
+    trashIcon.style.color = "#fff"; 
+
+    iconContainer.appendChild(trashIcon);
+
+    figure.style.position = "relative";
+    figure.appendChild(iconContainer);
+  });
+}
+
+  // Function to display gallery content
 function displayGalleryContent() {
   console.log("Display Gallery Content Clicked");
 
@@ -388,71 +392,20 @@ function displayGalleryContent() {
   title.textContent = "Galerie photo";
   modalContent.appendChild(title);
 
-  // Add a container for the figures in the modal
-  const modalGalleryContainer = document.createElement("div");
-  modalGalleryContainer.classList.add("modal-gallery");
+  // Clone the gallery content and append it to the modal container
+  const galleryClone = galleryContent.cloneNode(true);
+  galleryClone.classList.add("modal-gallery");
 
-  // Ajouter un style de disposition flex
-  modalGalleryContainer.style.display = "flex";
-  modalGalleryContainer.style.flexWrap = "wrap";
+  modalContent.appendChild(galleryClone);
 
-  // Clone the gallery figures and add trash icons
-  const galleryFigures = galleryContent.querySelectorAll("figure");
+  // Call the function to create trash icons
+  createTrashIcons(galleryClone.querySelectorAll("figure"));
 
-  galleryFigures.forEach((figure, index) => {
-    const figureClone = figure.cloneNode(true);
-    removeFigcaption(figureClone);  // Remove figcaption if it exists
-
-    // Ajouter la taille limitée aux éléments d'image
-    const imgElement = figureClone.querySelector("img");
-    if (imgElement) {
-      imgElement.style.width = "78.123px";
-      imgElement.style.height = "104.08px";
-    }
-
-    // Add the trash icon and event handler
-    const trashIcon = document.createElement("i");
-    trashIcon.className = "fa-regular fa-trash-can";
-    trashIcon.addEventListener("click", handleTrashIconClick);
-
-    const iconContainer = document.createElement("div");
-    iconContainer.className = "icon-container";
-    iconContainer.style.position = "absolute";
-    iconContainer.style.top = "10px";
-    iconContainer.style.right = "5px";
-    iconContainer.style.padding = "5px";
-    iconContainer.style.backgroundColor = "#000";  // Fond noir
-    trashIcon.style.color = "#fff";
-
-    iconContainer.appendChild(trashIcon);
-
-    figureClone.style.position = "relative";
-    figureClone.appendChild(iconContainer);
-
-    // Ajouter une marge droite (8px) à toutes les images sauf la dernière
-    if (index < galleryFigures.length - 1) {
-      figureClone.style.marginRight = "8px";
-    }
-
-    modalGalleryContainer.appendChild(figureClone);
-  });
-
-  modalContent.appendChild(modalGalleryContainer);
-
-  // Ajouter une ligne de séparation
-  const separator = document.createElement("hr");
-  separator.style.marginTop = "10px"; // Ajuster la marge supérieure selon vos besoins
-  modalContent.appendChild(separator);
-
-  // Ajouter le bouton "Ajouter une photo" après la ligne de séparation
+  // Add the "Ajouter une photo" button to the modal
   const addButton = document.createElement("button");
   addButton.id = "boutonAjoutdePhoto";
   addButton.className = "modal-button";
   addButton.textContent = "Ajouter une photo";
-
-  // Définir la marge supérieure du bouton par rapport au bas de la modale
-  addButton.style.marginTop = "45px";
-
   modalContent.appendChild(addButton);
 
   // Attach an event handler to the "Ajouter une photo" button
@@ -468,11 +421,10 @@ function displayGalleryContent() {
     console.log("Close Modal Clicked");
     toggleModal();
   });
+  // Call the function to remove figcaptions
+  createTrashIcons(galleryClone.querySelectorAll("figure"));
   modal.appendChild(closeModalButton);
-
 }
-
-modal.appendChild(closeModalButton);
 
 // Event handler for the "Ajouter une photo" button click
 async function handleAddPhotoButtonClick() {
