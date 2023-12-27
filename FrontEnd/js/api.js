@@ -405,12 +405,27 @@ function createTrashIcons(figures) {
       galleryContainer.querySelectorAll("figure").forEach(figure => {
         // Create a copy of the figure to display in the modal
         const figureCopy = figure.cloneNode(true);
+         // Adjust the size of the image in the modal
+    const imgElement = figureCopy.querySelector("img");
+    if (imgElement) {
+      imgElement.style.width = "76.611px";
+      imgElement.style.height = "102.064px";
+    }
+
         // Add a class to the copied figure for styling or identification
         figureCopy.classList.add("modal-figure");
+         // Apply style to change the display behavior to inline-block
+    figureCopy.style.display = "inline-block";
+// Add spacing between images in width and height
+figureCopy.style.marginRight = "6px";
+figureCopy.style.marginBottom = "25px";
         // Append the copied figure to the modal content
         modalContent.appendChild(figureCopy);
       });
-  
+   // Add a horizontal line between images and "Ajouter une photo" button
+   const hrElement = document.createElement("hr");
+   hrElement.style.marginTop = "120px";
+   modalContent.appendChild(hrElement);
       // Call the function to create trash icons for figures in the modal
       createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
     }
