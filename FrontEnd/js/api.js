@@ -1,5 +1,4 @@
 let data = [];
-let modal = document.querySelector(".modal");
 
 async function fetchData() {
   const apiUrl = "http://localhost:5678/api/works";
@@ -32,7 +31,7 @@ function displayGalleryItems(filteredData) {
   const galleryDiv = document.getElementById("gallery");
 
   if (!galleryDiv) {
-    return; // Arrêtez l'exécution si l'élément de la galerie n'est pas trouvé
+    return; // Arrête l'exécution si l'élément de la galerie n'est pas trouvé
   }
 
   const fragment = document.createDocumentFragment();
@@ -40,7 +39,7 @@ function displayGalleryItems(filteredData) {
 
   itemsToDisplay.forEach(item => {
     const figureElement = createFigureElement(item);
-    figureElement.classList.add('modal-figure'); // Ajoutez une classe spécifique
+    figureElement.classList.add('modal-figure');
     fragment.appendChild(figureElement);
   });
 
@@ -203,18 +202,11 @@ document.addEventListener("DOMContentLoaded", async function () {
           filterByCategory(3);
         });
       }
-
-      // Initialisation de la variable modal à l'intérieur de la fonction DOMContentLoaded
-      modal = document.querySelector(".modal");
-
-      // Ajout de la modale
+// Initialisation de la variable modal à l'intérieur de la fonction DOMContentLoaded
+modal = document.querySelector(".modal");
+     
+// Ajout de la modale
       const modalTriggers = document.querySelectorAll(".modal-btn.modal-trigger");
-      const overlay = document.querySelector(".overlay");
-      const galleryContent = document.getElementById("gallery");
-
-      // Ajoute un gestionnaire d'événements persistant pour le clic sur l'overlay
-      overlay.addEventListener("click", overlayClickHandler);
-
       const isUserLoggedIn = isLoggedIn();
 
       // Affiche ou masque le bouton "modifier" en fonction de la connexion
@@ -252,9 +244,6 @@ async function toggleModal() {
   console.log("Toggle Modal");
   const modalContainer = document.querySelector(".modal-container");
   const overlay = document.querySelector(".overlay");
-
-  // Vérifie si la modale est active avant de la désactiver
-  const wasModalActive = modalContainer.classList.contains("active");
 
   // Inverse la classe pour afficher ou masquer la modale
   modalContainer.classList.toggle("active");
