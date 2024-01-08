@@ -217,6 +217,24 @@ document.addEventListener("DOMContentLoaded", async function () {
           filterByCategory(3);
         });
       }
+      
+      if (token) {
+ 
+        // Ajoute dynamiquement un bouton de déconnexion
+        const logoutButton = document.createElement("button");
+        logoutButton.id = "logoutButton";
+        logoutButton.textContent = "Logout";
+        logoutButton.addEventListener("click", function () {
+          localStorage.removeItem('token');
+          window.location.href = "/login/login.html";
+        });
+       
+        const header = document.querySelector("header");
+        if (header) {
+          header.appendChild(logoutButton);
+        }
+       }
+       
 // Initialisation de la variable modal à l'intérieur de la fonction DOMContentLoaded
 modal = document.querySelector(".modal");
      
@@ -550,23 +568,6 @@ figureCopy.style.marginBottom = "25px";
   createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
   
   modal.appendChild(closeModalButton);
-}
-
-      if (token) {
- 
- // Ajoute dynamiquement un bouton de déconnexion
- const logoutButton = document.createElement("button");
- logoutButton.id = "logoutButton";
- logoutButton.textContent = "Logout";
- logoutButton.addEventListener("click", function () {
-   localStorage.removeItem('token');
-   window.location.href = "/login/login.html";
- });
-
- const header = document.querySelector("header");
- if (header) {
-   header.appendChild(logoutButton);
- }
 }
     }
   }
