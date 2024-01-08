@@ -274,7 +274,6 @@ async function updateGallery(){
 
       console.log("Mise à jour de la galerie terminée");
 
-      // Création des icônes de corbeille pour les nouvelles figures de la modale
       const modalgalleryContent = modal.querySelector(".modal-gallery");
       if (modalgalleryContent) {
         createTrashIcons(modalgalleryContent.querySelectorAll("figure"));
@@ -328,10 +327,10 @@ async function handleTrashIconClick(event) {
     clearGalleryDiv(galleryDiv);
 
     // Mise à jour de la galerie principale
-    await updateGallery(true); // Passer true pour indiquer que la suppression a été réussie
+    await updateGallery(true); 
   } catch (error) {
     console.error("Error deleting image:", error);
-    await updateGallery(false); // Passer false pour indiquer que la suppression a échoué
+    await updateGallery(false); 
   }
 }
 
@@ -352,7 +351,7 @@ function createTrashIcons(figures) {
       iconContainer.style.top = "10px";
       iconContainer.style.right = "5px";
       iconContainer.style.padding = "5px";
-      iconContainer.style.backgroundColor = "#000";  // Fond noir
+      iconContainer.style.backgroundColor = "#000";
 
       trashIcon.style.color = "#fff"; 
 
@@ -364,68 +363,53 @@ function createTrashIcons(figures) {
   });
 }
 
-  // Function to display gallery content
   function displayGalleryContent() {
     console.log("Display Gallery Content Clicked");
-  
-    // Clear existing content in the modal
     modal.innerHTML = "";
-  
-    // Create a container for the modal content
     const modalContent = document.createElement("div");
   
-    // Add the h1 title to the modal
+    // Ajout h1
     const title = document.createElement("h1");
     title.textContent = "Galerie photo";
     modalContent.appendChild(title);
   
-    // Get the gallery container
+    // création gallery container
     const galleryContainer = document.getElementById("gallery");
-  
-    // Check if the gallery container exists
     if (galleryContainer) {
-      // Iterate over each figure in the gallery and display it in the modal
-      galleryContainer.querySelectorAll("figure").forEach(figure => {
-        // Create a copy of the figure to display in the modal
+      galleryContainer.querySelectorAll("figure").forEach(figure => 
+        {
         const figureCopy = figure.cloneNode(true);
-         // Adjust the size of the image in the modal
     const imgElement = figureCopy.querySelector("img");
     if (imgElement) {
       imgElement.style.width = "76.611px";
       imgElement.style.height = "102.064px";
     }
 
-        // Add a class to the copied figure for styling or identification
         figureCopy.classList.add("modal-figure");
-         // Apply style to change the display behavior to inline-block
     figureCopy.style.display = "inline-block";
-// Add spacing between images in width and height
 figureCopy.style.marginRight = "6px";
 figureCopy.style.marginBottom = "25px";
-        // Append the copied figure to the modal content
         modalContent.appendChild(figureCopy);
       });
-   // Add a horizontal line between images and "Ajouter une photo" button
+   // Ligne horizontal
    const hrElement = document.createElement("hr");
    hrElement.style.marginTop = "120px";
    modalContent.appendChild(hrElement);
-      // Call the function to create trash icons for figures in the modal
+
       createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
     }
   
-    // Add the "Ajouter une photo" button to the modal
+    // Bouton Ajouter une photo à la Modal
     const addButton = document.createElement("button");
     addButton.id = "boutonAjoutdePhoto";
     addButton.className = "modal-button";
     addButton.textContent = "Ajouter une photo";
     modalContent.appendChild(addButton);
   
-    // Attach an event handler to the "Ajouter une photo" button
     addButton.addEventListener("click", handleAddPhotoButtonClick);
   
     modal.appendChild(modalContent);
-  
-    // Add an event handler to close the modal
+
     const closeModalButton = document.createElement("button");
     closeModalButton.className = "close-modal modal-trigger";
     closeModalButton.textContent = "X";
@@ -434,20 +418,17 @@ figureCopy.style.marginBottom = "25px";
       toggleModal();
     });
   
-    // Call the function to remove figcaptions
     createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
     
     modal.appendChild(closeModalButton);
   }
   
   
-// Event handler for the "Ajouter une photo" button click
 async function handleAddPhotoButtonClick() {
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
   const modalContent = modal.querySelector("div");
 
-  // Replace the existing content with the new modal content
   modalContent.innerHTML = `
     <div id="container">
       <i class="fa-solid fa-arrow-left" id="backButton"></i>
@@ -487,7 +468,6 @@ async function handleAddPhotoButtonClick() {
     <button class="close-new-modal">X</button>
   `;
 
-  // Dynamically add the script for the previewImage function
   const scriptElement = document.createElement("script");
   scriptElement.text = `
     function previewImage(event) {
