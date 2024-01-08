@@ -40,6 +40,19 @@ function displayGalleryItems(filteredData) {
   galleryDiv.appendChild(fragment);
 }
 
+function createFigureElement(item) {
+  const figureElement = document.createElement("figure");
+  figureElement.dataset.id = item.id;
+
+  const imgElement = document.createElement("img");
+  imgElement.src = item.imageUrl;
+  imgElement.alt = item.title;
+
+  figureElement.appendChild(imgElement);
+
+  return figureElement;
+}
+
 // Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
   // Filtre les travaux en fonction de la catégorie
@@ -137,23 +150,27 @@ function toggleEditModeBanner(isEditMode) {
   }
 }
 
-function removeFigcaption(figure) {
-  if (figure && figure.querySelector("figcaption")) {
-    figure.removeChild(figure.querySelector("figcaption"));
+// Déclaration de la fonction pour afficher ou masquer la modale
+async function toggleModal() {
+  console.log("Toggle Modal");
+  const modalContainer = document.querySelector(".modal-container");
+  const overlay = document.querySelector(".overlay");
+
+  // Inverse la classe pour afficher ou masquer la modale
+  modalContainer.classList.toggle("active");
+
+  // Ajoute ou supprime le gestionnaire d'événements sur l'overlay
+  if (modalContainer.classList.contains("active")) {
+    overlay.addEventListener("click", overlayClickHandler);
   }
 }
-function createFigureElement(item) {
-  const figureElement = document.createElement("figure");
-  figureElement.dataset.id = item.id;
-
-  const imgElement = document.createElement("img");
-  imgElement.src = item.imageUrl;
-  imgElement.alt = item.title;
-
-  figureElement.appendChild(imgElement);
-
-  return figureElement;
-}
+    // Déclaration de la fonction pour gérer le clic sur l'overlay
+    function overlayClickHandler(event) {
+      console.log("Overlay Clicked");
+      if (event.target.classList.contains('overlay')) {
+        toggleModal();
+      }
+    }
 
 document.addEventListener("DOMContentLoaded", async function () {
   console.log("DOM Content Loaded. Calling fetchData...");
@@ -229,63 +246,6 @@ modal = document.querySelector(".modal");
         });
       }
    
-    // Déclaration de la fonction pour gérer le clic sur l'overlay
-function overlayClickHandler(event) {
-  console.log("Overlay Clicked");
-  if (event.target.classList.contains('overlay')) {
-    toggleModal();
-  }
-}
-
-// Déclaration de la fonction pour afficher ou masquer la modale
-async function toggleModal() {
-  console.log("Toggle Modal");
-  const modalContainer = document.querySelector(".modal-container");
-  const overlay = document.querySelector(".overlay");
-
-  // Inverse la classe pour afficher ou masquer la modale
-  modalContainer.classList.toggle("active");
-
-  // Ajoute ou supprime le gestionnaire d'événements sur l'overlay
-  if (modalContainer.classList.contains("active")) {
-    overlay.addEventListener("click", overlayClickHandler);
-  }
-}
-
-async function updateGallery(){
-  const apiUrl = "http://localhost:5678/api/works";
-  try {
-    const response = await fetch(apiUrl);
-
-    if (response.ok) {
-      data = await response.json();
-      console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
-
-      // Appel de la fonction pour afficher dynamiquement les travaux
-      displayGalleryItems(data);
-
-      // Si la modale est ouverte, met à jour la galerie dans la modale également
-      if (modal.classList.contains("active")) {
-        const modalGallery = modal.querySelector(".modal-gallery");
-        createTrashIcons(modalGallery.querySelectorAll("figure"));
-      }
-
-      console.log("Mise à jour de la galerie terminée");
-
-      const modalgalleryContent = modal.querySelector(".modal-gallery");
-      if (modalgalleryContent) {
-        createTrashIcons(modalgalleryContent.querySelectorAll("figure"));
-      }
-    } else {
-      console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
-    }
-
-  } catch (error) {
-    console.error("Une erreur s'est produite lors de la requête :", error);
-
-  }
-}
-
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
   const figureElement = event.target.closest("figure");
@@ -332,96 +292,6 @@ async function handleTrashIconClick(event) {
   }
 }
 
-// Création des icônes de corbeille 
-function createTrashIcons(figures) {
-  figures.forEach(figure => {
-    // Vérifiez si la figure a la classe spécifique
-    if (figure.classList.contains('modal-figure')) {
-      removeFigcaption(figure);
-
-      const trashIcon = document.createElement("i");
-      trashIcon.className = "fa-regular fa-trash-can";
-      trashIcon.addEventListener("click", handleTrashIconClick);
-
-      const iconContainer = document.createElement("div");
-      iconContainer.className = "icon-container";
-      iconContainer.style.position = "absolute";
-      iconContainer.style.top = "10px";
-      iconContainer.style.right = "5px";
-      iconContainer.style.padding = "5px";
-      iconContainer.style.backgroundColor = "#000";
-
-      trashIcon.style.color = "#fff"; 
-
-      iconContainer.appendChild(trashIcon);
-
-      figure.style.position = "relative";
-      figure.appendChild(iconContainer);
-    }
-  });
-}
-
-  function displayGalleryContent() {
-    console.log("Display Gallery Content Clicked");
-    modal.innerHTML = "";
-    const modalContent = document.createElement("div");
-  
-    // Ajout h1
-    const title = document.createElement("h1");
-    title.textContent = "Galerie photo";
-    modalContent.appendChild(title);
-  
-    // création gallery container
-    const galleryContainer = document.getElementById("gallery");
-    if (galleryContainer) {
-      galleryContainer.querySelectorAll("figure").forEach(figure => 
-        {
-        const figureCopy = figure.cloneNode(true);
-    const imgElement = figureCopy.querySelector("img");
-    if (imgElement) {
-      imgElement.style.width = "76.611px";
-      imgElement.style.height = "102.064px";
-    }
-
-        figureCopy.classList.add("modal-figure");
-    figureCopy.style.display = "inline-block";
-figureCopy.style.marginRight = "6px";
-figureCopy.style.marginBottom = "25px";
-        modalContent.appendChild(figureCopy);
-      });
-   // Ligne horizontal
-   const hrElement = document.createElement("hr");
-   hrElement.style.marginTop = "120px";
-   modalContent.appendChild(hrElement);
-
-      createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
-    }
-  
-    // Bouton Ajouter une photo à la Modal
-    const addButton = document.createElement("button");
-    addButton.id = "boutonAjoutdePhoto";
-    addButton.className = "modal-button";
-    addButton.textContent = "Ajouter une photo";
-    modalContent.appendChild(addButton);
-  
-    addButton.addEventListener("click", handleAddPhotoButtonClick);
-  
-    modal.appendChild(modalContent);
-
-    const closeModalButton = document.createElement("button");
-    closeModalButton.className = "close-modal modal-trigger";
-    closeModalButton.textContent = "X";
-    closeModalButton.addEventListener("click", function () {
-      console.log("Close Modal Clicked");
-      toggleModal();
-    });
-  
-    createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
-    
-    modal.appendChild(closeModalButton);
-  }
-  
-  
 async function handleAddPhotoButtonClick() {
   console.log("Bouton 'Ajouter une photo' cliqué !");
 
@@ -560,6 +430,128 @@ if (backButton) {
 
   }
   
+  async function updateGallery() {
+    const apiUrl = "http://localhost:5678/api/works";
+    try {
+      const response = await fetch(apiUrl);
+  
+      if (response.ok) {
+        data = await response.json();
+        console.log("Mise à jour de la galerie. Données récupérées de l'API :", data);
+  
+        // Appel de la fonction pour afficher dynamiquement les travaux
+        displayGalleryItems(data);
+  
+        // Si la modale est ouverte, met à jour la galerie dans la modale également
+        if (modal.classList.contains("active")) {
+          const modalGallery = modal.querySelector(".modal-gallery");
+          createTrashIcons(modalGallery.querySelectorAll("figure"));
+        }
+  
+        console.log("Mise à jour de la galerie terminée");
+  
+        const modalgalleryContent = modal.querySelector(".modal-gallery");
+        if (modalgalleryContent) {
+          createTrashIcons(modalgalleryContent.querySelectorAll("figure"));
+        }
+      } else {
+        console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
+      }
+  
+    } catch (error) {
+      console.error("Une erreur s'est produite lors de la requête :", error);
+  
+    }
+  }
+
+// Création des icônes de corbeille 
+function createTrashIcons(figures) {
+  figures.forEach(figure => {
+    // Vérifiez si la figure a la classe spécifique
+    if (figure.classList.contains('modal-figure')) {
+
+      const trashIcon = document.createElement("i");
+      trashIcon.className = "fa-regular fa-trash-can";
+      trashIcon.addEventListener("click", handleTrashIconClick);
+
+      const iconContainer = document.createElement("div");
+      iconContainer.className = "icon-container";
+      iconContainer.style.position = "absolute";
+      iconContainer.style.top = "10px";
+      iconContainer.style.right = "5px";
+      iconContainer.style.padding = "5px";
+      iconContainer.style.backgroundColor = "#000";
+
+      trashIcon.style.color = "#fff"; 
+
+      iconContainer.appendChild(trashIcon);
+
+      figure.style.position = "relative";
+      figure.appendChild(iconContainer);
+    }
+  });
+}
+
+function displayGalleryContent() {
+  console.log("Display Gallery Content Clicked");
+  modal.innerHTML = "";
+  const modalContent = document.createElement("div");
+
+  // Ajout h1
+  const title = document.createElement("h1");
+  title.textContent = "Galerie photo";
+  modalContent.appendChild(title);
+
+  // création gallery container
+  const galleryContainer = document.getElementById("gallery");
+  if (galleryContainer) {
+    galleryContainer.querySelectorAll("figure").forEach(figure => 
+      {
+      const figureCopy = figure.cloneNode(true);
+  const imgElement = figureCopy.querySelector("img");
+  if (imgElement) {
+    imgElement.style.width = "76.611px";
+    imgElement.style.height = "102.064px";
+  }
+
+      figureCopy.classList.add("modal-figure");
+  figureCopy.style.display = "inline-block";
+figureCopy.style.marginRight = "6px";
+figureCopy.style.marginBottom = "25px";
+      modalContent.appendChild(figureCopy);
+    });
+ // Ligne horizontal
+ const hrElement = document.createElement("hr");
+ hrElement.style.marginTop = "120px";
+ modalContent.appendChild(hrElement);
+
+    createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
+  }
+
+  // Bouton Ajouter une photo à la Modal
+  const addButton = document.createElement("button");
+  addButton.id = "boutonAjoutdePhoto";
+  addButton.className = "modal-button";
+  addButton.textContent = "Ajouter une photo";
+  modalContent.appendChild(addButton);
+
+  addButton.addEventListener("click", handleAddPhotoButtonClick);
+
+  modal.appendChild(modalContent);
+
+  const closeModalButton = document.createElement("button");
+  closeModalButton.className = "close-modal modal-trigger";
+  closeModalButton.textContent = "X";
+  closeModalButton.addEventListener("click", function () {
+    console.log("Close Modal Clicked");
+    toggleModal();
+  });
+
+  createTrashIcons(modalContent.querySelectorAll('.modal-figure'));
+  
+  modal.appendChild(closeModalButton);
+}
+
       if (token) {
  
  // Ajoute dynamiquement un bouton de déconnexion
