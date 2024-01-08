@@ -20,13 +20,6 @@ async function fetchData() {
   }
 }
 
-function clearGalleryDiv(galleryDiv) {
-  // Supprime tous les enfants de la galerie
-  while (galleryDiv.firstChild) {
-    galleryDiv.removeChild(galleryDiv.firstChild);
-  }
-}
-
 function displayGalleryItems(filteredData) {
   const galleryDiv = document.getElementById("gallery");
 
@@ -47,23 +40,29 @@ function displayGalleryItems(filteredData) {
   galleryDiv.appendChild(fragment);
 }
 
-function removeFigcaption(figure) {
-  if (figure && figure.querySelector("figcaption")) {
-    figure.removeChild(figure.querySelector("figcaption"));
+// Déclaration de la fonction pour filtrer les travaux par catégorie
+function filterByCategory(categoryId) {
+  // Filtre les travaux en fonction de la catégorie
+  const filteredWorks = (categoryId === 'all') ?
+    data :
+    data.filter(work => work.categoryId === categoryId);
+  // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
+  displayGalleryItems(filteredWorks);
+}
+
+// Fonction pour mettre à jour la visibilité des filtres en fonction de la connexion
+function updateFilterVisibility() {
+  const filtersContainer = document.getElementById("categoryButtons");
+  if (filtersContainer) {
+    filtersContainer.classList.toggle("hidden", isLoggedIn());
   }
 }
 
-function createFigureElement(item) {
-  const figureElement = document.createElement("figure");
-  figureElement.dataset.id = item.id;
-
-  const imgElement = document.createElement("img");
-  imgElement.src = item.imageUrl;
-  imgElement.alt = item.title;
-
-  figureElement.appendChild(imgElement);
-
-  return figureElement;
+function clearGalleryDiv(galleryDiv) {
+  // Supprime tous les enfants de la galerie
+  while (galleryDiv.firstChild) {
+    galleryDiv.removeChild(galleryDiv.firstChild);
+  }
 }
 
 function updateLoginLogoutButton() {
@@ -95,6 +94,12 @@ function updateLoginLogoutButton() {
 
     toggleEditModeBanner(false);
   }
+}
+
+// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
+function isLoggedIn() {
+  const token = localStorage.getItem('token');
+  return !!token; 
 }
 
 function toggleEditModeBanner(isEditMode) {
@@ -132,29 +137,22 @@ function toggleEditModeBanner(isEditMode) {
   }
 }
 
-// Fonction pour mettre à jour la visibilité des filtres en fonction de la connexion
-
-function updateFilterVisibility() {
-  const filtersContainer = document.getElementById("categoryButtons");
-  if (filtersContainer) {
-    filtersContainer.classList.toggle("hidden", isLoggedIn());
+function removeFigcaption(figure) {
+  if (figure && figure.querySelector("figcaption")) {
+    figure.removeChild(figure.querySelector("figcaption"));
   }
 }
+function createFigureElement(item) {
+  const figureElement = document.createElement("figure");
+  figureElement.dataset.id = item.id;
 
-// Déclaration de la fonction pour filtrer les travaux par catégorie
-function filterByCategory(categoryId) {
-  // Filtre les travaux en fonction de la catégorie
-  const filteredWorks = (categoryId === 'all') ?
-    data :
-    data.filter(work => work.categoryId === categoryId);
-  // Appel de la fonction pour afficher dynamiquement les travaux filtrés dans la galerie
-  displayGalleryItems(filteredWorks);
-}
+  const imgElement = document.createElement("img");
+  imgElement.src = item.imageUrl;
+  imgElement.alt = item.title;
 
-// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
-function isLoggedIn() {
-  const token = localStorage.getItem('token');
-  return !!token; 
+  figureElement.appendChild(imgElement);
+
+  return figureElement;
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
