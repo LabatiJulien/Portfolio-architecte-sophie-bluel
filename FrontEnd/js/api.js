@@ -481,10 +481,6 @@ if (backButton) {
   
         console.log("Mise à jour de la galerie terminée");
   
-        const modalgalleryContent = modal.querySelector(".modal-gallery");
-        if (modalgalleryContent) {
-          createTrashIcons(modalgalleryContent.querySelectorAll("figure"));
-        }
       } else {
         console.error("Erreur lors de la récupération des données de l'API. Statut :", response.status);
       }
