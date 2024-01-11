@@ -357,37 +357,47 @@ async function handleAddPhotoButtonClick() {
   const scriptElement = document.createElement("script");
   scriptElement.text = `
     function previewImage(event) {
+      // Récupère l'élément input qui a déclenché l'événement
       var input = event.target;
+      // Récupère les éléments du DOM nécessaires pour la prévisualisation
       var preview = document.getElementById('photoPreview');
       var fileInput = document.getElementById('fileInput');
       var defaultImage = document.getElementById('defaultImage');
       var customFileLabel = document.getElementById('customFileLabel');
 
+      // Vérifie si un fichier a été sélectionné
       if (input.files && input.files[0]) {
+        // Crée un objet FileReader pour lire le contenu du fichier
         var reader = new FileReader();
-
+       
+        // Définit une fonction à exécuter lorsque la lecture est terminée
         reader.onload = function(e) {
+          // Met à jour l'élément img de prévisualisation avec le résultat de la lecture
           preview.src = e.target.result;
+
+          // Affiche l'élément de prévisualisation et masque les éléments par défaut
           preview.style.display = 'block';
           defaultImage.style.display = 'none';
           customFileLabel.style.display = 'none';
 
-          // Add styles to center the preview image
+          // Ajoute des styles pour centrer l'image de prévisualisation
           preview.style.margin = 'auto';
           preview.style.display = 'block';
         };
-
+       
+        // Démarre la lecture du fichier en tant que données URL
         reader.readAsDataURL(input.files[0]);
 
-        // Disable the fileInput element after selecting an image
+        // Désactive l'élément fileInput après la sélection d'une image
         fileInput.disabled = true;
       } else {
+        // Si aucun fichier n'est sélectionné, réinitialise les éléments
         preview.src = '';
         preview.style.display = 'none';
         defaultImage.style.display = 'block';
         customFileLabel.style.display = 'block';
 
-        // Enable the fileInput element if no image is selected
+        // Active l'élément fileInput si aucune image n'est sélectionnée
         fileInput.disabled = false;
       }
     }
