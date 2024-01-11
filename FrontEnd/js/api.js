@@ -357,8 +357,10 @@ async function handleAddPhotoButtonClick() {
   const scriptElement = document.createElement("script");
   scriptElement.text = `
     function previewImage(event) {
+      
       // Récupère l'élément input qui a déclenché l'événement
       var input = event.target;
+      
       // Récupère les éléments du DOM nécessaires pour la prévisualisation
       var preview = document.getElementById('photoPreview');
       var fileInput = document.getElementById('fileInput');
@@ -391,6 +393,7 @@ async function handleAddPhotoButtonClick() {
         // Désactive l'élément fileInput après la sélection d'une image
         fileInput.disabled = true;
       } else {
+      
         // Si aucun fichier n'est sélectionné, réinitialise les éléments
         preview.src = '';
         preview.style.display = 'none';
