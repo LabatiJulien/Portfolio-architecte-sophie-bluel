@@ -21,22 +21,27 @@ async function fetchData() {
 }
 
 function displayGalleryItems(filteredData) {
+    
+  // Récupère l'élément de la galerie par son ID
   const galleryDiv = document.getElementById("gallery");
 
+  // Arrête l'exécution si l'élément de la galerie n'est pas trouvé
   if (!galleryDiv) {
-    return; // Arrête l'exécution si l'élément de la galerie n'est pas trouvé
+    return; 
   }
-
+// Crée un fragment de document pour améliorer les performances des manipulations DOM
   const fragment = document.createDocumentFragment();
+  // Détermine les éléments à afficher en fonction des données filtrées ou non filtrées
   const itemsToDisplay = (filteredData !== undefined) ? filteredData : data;
-
+// Pour chaque élément à afficher, crée un élément figure et l'ajoute au fragment
   itemsToDisplay.forEach(item => {
     const figureElement = createFigureElement(item);
     figureElement.classList.add('modal-figure');
     fragment.appendChild(figureElement);
   });
-
+  // Efface le contenu actuel de l'élément de la galerie
   clearGalleryDiv(galleryDiv);
+  // Ajoute le fragment (contenant les nouvelles figures) à l'élément de la galerie
   galleryDiv.appendChild(fragment);
 }
 
@@ -53,7 +58,6 @@ function createFigureElement(item) {
   return figureElement;
 }
 
-// Déclaration de la fonction pour filtrer les travaux par catégorie
 function filterByCategory(categoryId) {
   // Filtre les travaux en fonction de la catégorie
   const filteredWorks = (categoryId === 'all') ?
@@ -67,6 +71,7 @@ function filterByCategory(categoryId) {
 function updateFilterVisibility() {
   const filtersContainer = document.getElementById("categoryButtons");
   if (filtersContainer) {
+    // Utilise la méthode toggle pour ajouter ou retirer la classe "hidden" en fonction de la connexion
     filtersContainer.classList.toggle("hidden", isLoggedIn());
   }
 }
@@ -97,8 +102,6 @@ function updateLoginLogoutButton() {
     toggleEditModeBanner(true);
   } else {
    
-    // Utilisateur non connecté
-    // Remplace le bouton "Logout" par le lien "Login"
     if (logoutButton && loginLink) {
       logoutButton.replaceWith(loginLink);
     }
@@ -109,7 +112,6 @@ function updateLoginLogoutButton() {
   }
 }
 
-// Déclaration de la fonction pour vérifier si l'utilisateur est connecté
 function isLoggedIn() {
   const token = localStorage.getItem('token');
   return !!token; 
@@ -123,10 +125,11 @@ function toggleEditModeBanner(isEditMode) {
       // Crée la bande noire avec le texte "Mode édition"
       const editModeBanner = document.createElement("div");
       editModeBanner.className = "edit-mode-banner";
-
+ 
+      // Crée l'icône avec les classes FontAwesome
       const iconElement = document.createElement("i");
       iconElement.classList.add("fa-regular", "fa-pen-to-square", "fa-xs");
-
+// Ajoute l'icône à la bande noire
       editModeBanner.appendChild(iconElement);
 
       // Crée l'élément pour le texte "Mode édition"
@@ -150,7 +153,6 @@ function toggleEditModeBanner(isEditMode) {
   }
 }
 
-// Déclaration de la fonction pour afficher ou masquer la modale
 async function toggleModal() {
   console.log("Toggle Modal");
   const modalContainer = document.querySelector(".modal-container");
@@ -164,7 +166,6 @@ async function toggleModal() {
     overlay.addEventListener("click", overlayClickHandler);
   }
 }
-    // Déclaration de la fonction pour gérer le clic sur l'overlay
     function overlayClickHandler(event) {
       console.log("Overlay Clicked");
       if (event.target.classList.contains('overlay')) {
@@ -266,6 +267,7 @@ modal = document.querySelector(".modal");
    
 // Gestionnaire d'événements pour l'icône de la corbeille
 async function handleTrashIconClick(event) {
+  // Récupère l'élément figure le plus proche (ascendant) de l'icône de la corbeille
   const figureElement = event.target.closest("figure");
   if (!figureElement) {
     console.error("Figure element not found.");
@@ -312,9 +314,9 @@ async function handleTrashIconClick(event) {
 
 async function handleAddPhotoButtonClick() {
   console.log("Bouton 'Ajouter une photo' cliqué !");
-
+// Récupère l'élément contenant le contenu de la modale
   const modalContent = modal.querySelector("div");
-
+// Remplace le contenu de la modale par un formulaire d'ajout de photo
   modalContent.innerHTML = `
     <div id="container">
       <i class="fa-solid fa-arrow-left" id="backButton"></i>
@@ -353,7 +355,7 @@ async function handleAddPhotoButtonClick() {
     <!-- Bouton pour fermer la nouvelle modale -->
     <button class="close-new-modal">X</button>
   `;
-
+// Crée un élément de script contenant une fonction de prévisualisation d'image
   const scriptElement = document.createElement("script");
   scriptElement.text = `
     function previewImage(event) {
@@ -406,13 +408,13 @@ async function handleAddPhotoButtonClick() {
     }
   `;
   document.head.appendChild(scriptElement);
-
+ // Récupère le bouton de fermeture de la nouvelle modale
   const closeNewModalButton = modalContent.querySelector(".close-new-modal");
   if (closeNewModalButton) {
     closeNewModalButton.addEventListener("click", function () {
       
     });
-
+ // Récupère le bouton de retour
     const backButton = modalContent.querySelector("#backButton");
 if (backButton) {
   backButton.addEventListener("click", function () {
@@ -424,9 +426,10 @@ if (backButton) {
   // Ajoute un gestionnaire d'événements au formulaire
   const addPhotoForm = modalContent.querySelector("#addPhotoForm");
   if (addPhotoForm) {
+     // Ajoute un gestionnaire d'événements à la soumission du formulaire
     addPhotoForm.addEventListener("submit", async function (event) {
       event.preventDefault();
-
+// Crée un objet FormData avec les valeurs du formulaire
       const formData = new FormData();
       formData.append("image", document.getElementById("fileInput").files[0]);
       formData.append("title", document.getElementById("photoTitle").value);
@@ -521,7 +524,10 @@ function createTrashIcons(figures) {
 
 function displayGalleryContent() {
   console.log("Display Gallery Content Clicked");
+  // Nettoie le contenu de la modale
   modal.innerHTML = "";
+  
+  // Crée un nouvel élément div pour le contenu de la modale
   const modalContent = document.createElement("div");
 
   // Ajout h1
@@ -529,12 +535,14 @@ function displayGalleryContent() {
   title.textContent = "Galerie photo";
   modalContent.appendChild(title);
 
-  // création gallery container
+  // Récupère le conteneur de la galerie dans le document
   const galleryContainer = document.getElementById("gallery");
   if (galleryContainer) {
     galleryContainer.querySelectorAll("figure").forEach(figure => 
       {
+        // Clone la figure pour la modale
       const figureCopy = figure.cloneNode(true);
+      // Ajuste la taille de l'image dans la figure
   const imgElement = figureCopy.querySelector("img");
   if (imgElement) {
     imgElement.style.width = "76.611px";

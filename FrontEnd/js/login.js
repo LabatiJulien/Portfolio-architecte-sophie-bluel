@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Récupère l'élément du formulaire de connexion par son ID
   const loginForm = document.getElementById("loginForm");
   const errorMessage = document.getElementById("errorMessage");
 
